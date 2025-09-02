@@ -1,15 +1,19 @@
 'use client'
-import { useState } from "react"
+import { useState} from "react"
+import { useAuth } from "@/context/userContext"
 import { useRouter } from "next/navigation"
-import { useSignUp } from "@clerk/nextjs"
+import { useSignUp, useUser } from "@clerk/nextjs"
 import GoogleSignupButton from "@/components/userAuth/GoogleSignupButton"
 
 const Page = () => {
   const router = useRouter()
   const { isLoaded, signUp, setActive } = useSignUp()
+  const { user } = useUser()
   const [form, setForm] = useState({ name: "", email: "", password: "" })
+  const { setIsSignedup } = useAuth();
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [isClicked, setisClicked] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -32,7 +36,14 @@ const Page = () => {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId })
-        router.push("/dashboard")
+        if(user?.fullName != null){
+          setIsSignedup(true);
+          console.log(user);
+        }
+        else{
+          console.log("user is null");
+        }
+        router.push("/")
       } else {
         router.push("/verify-email")
       }
@@ -72,6 +83,7 @@ const Page = () => {
             type="password"
             name="password"
             placeholder="Password"
+            autoComplete="new-password"
             value={form.password}
             onChange={handleChange}
             className="w-full p-3 outline rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -85,8 +97,8 @@ const Page = () => {
             {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
-        <GoogleSignupButton />
-
+        <GoogleSignupButton isClicked={isClicked} setisClicked={setisClicked}/>
+        <div id="clerk-captcha" className={`${isClicked ? 'mt-5' : 'hidden'}`}/>
         <p className="text-sm text-gray-600 text-center mt-4">
           Already have an account?{" "}
           <a href="/userAuth/login" className="text-indigo-600 hover:underline">

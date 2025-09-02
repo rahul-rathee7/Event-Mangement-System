@@ -2,7 +2,7 @@
 import { useSignUp } from "@clerk/nextjs";
 import Image from "next/image";
 
-export default function GoogleSignupButton() {
+export default function GoogleSignupButton({isClicked, setisClicked}: {isClicked: boolean, setisClicked: React.Dispatch<React.SetStateAction<boolean>>}) {
   const { signUp } = useSignUp();
 
   const handleGoogleSignup = () => {
@@ -11,11 +11,13 @@ export default function GoogleSignupButton() {
       redirectUrl: "/", 
       redirectUrlComplete: "/",
     });
+    setisClicked(true);
   };
 
   return (
     <button 
       onClick={handleGoogleSignup}
+      disabled={isClicked}
       className="mt-3 w-full flex justify-center items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-red-600 transition"
     >
       <Image

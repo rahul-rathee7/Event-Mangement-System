@@ -29,7 +29,6 @@ const Navbar = () => {
                 <div className='flex items-center gap-3'>
                   <div className='flex gap-1'>
                     <FlipLink>{user?.firstName}</FlipLink>
-                    <FlipLink>{user?.lastName}</FlipLink>
                   </div>
                     <button onClick={() => setIsdropdown(!isdropDown)}><img src={user?.imageUrl} alt={user?.fullName} className='w-10 h-10 rounded-full' /></button>
                     <NavDropDown className={`${isdropDown ? 'block' : 'hidden'}`}/>

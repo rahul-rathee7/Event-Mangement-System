@@ -1,16 +1,18 @@
 'use client'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useSignIn } from "@clerk/nextjs"
+import { useSignIn, useUser } from "@clerk/nextjs"
+import { useAuth } from '@/context/userContext'
 import GoogleLoginButton from "@/components/userAuth/GoogleLoginButton"
 
 const Page = () => {
   const router = useRouter()
   const { isLoaded, signIn, setActive } = useSignIn()
-
+  const { user } = useUser();
   const [form, setForm] = useState({ email: "", password: "" })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const { setIsSignedup } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -23,18 +25,22 @@ const Page = () => {
     setError("")
 
     try {
-      // step 1: try to sign in
       const result = await signIn.create({
         identifier: form.email,
         password: form.password,
       })
 
-      // step 2: handle success
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId })
-        router.push("/dashboard")
+        if(user?.fullName != null){
+          setIsSignedup(true);
+          console.log(user);
+        }
+        else{
+          console.log("user is null");
+        }
+        router.push("/")
       } else {
-        // agar verification required ho (e.g. OTP)
         router.push("/verify-email")
       }
 
@@ -49,9 +55,7 @@ const Page = () => {
     <div className="flex items-center justify-center px-4 text-black w-full translate-y-1/3">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-bold text-center mb-6">Sign in to your account</h2>
-
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
