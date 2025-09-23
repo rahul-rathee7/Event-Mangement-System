@@ -11,7 +11,6 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div>
       <header>
-        <h1 className="text-4xl font-bold text-center mt-10">Auth Layout</h1>
       </header>
       {children}
     </div>

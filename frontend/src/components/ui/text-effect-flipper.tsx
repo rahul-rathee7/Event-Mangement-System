@@ -7,17 +7,16 @@ const STAGGER = 0.025
 interface FlipLinkProps {
   children: string,
   className?: string,
-  href?: string
+  onClick?: () => void,
 }
 
-const FlipLink: React.FC<FlipLinkProps> = ({ children, className = "", href}) => {
+const FlipLink: React.FC<FlipLinkProps> = ({ children, className = "", onClick}) => {
   return (
     <motion.a
       initial="initial"
       whileHover="hovered"
-      target="_blank"
       className={`relative block overflow-hidden whitespace-nowrap text-2xl dark:text-white/90 ${className}`}
-      href={href}
+      onClick={onClick}
       style={{
         lineHeight: 0.75,
       }}

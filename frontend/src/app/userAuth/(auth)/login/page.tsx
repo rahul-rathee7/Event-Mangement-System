@@ -51,6 +51,10 @@ const Page = () => {
     }
   }
 
+  const forgetPassword = () => {
+    router.push("/userAuth/forget-password")
+  }
+
   return (
     <div className="flex items-center justify-center px-4 text-black w-full translate-y-1/3">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
@@ -75,7 +79,9 @@ const Page = () => {
             className="w-full p-3 outline rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
-
+          <div className="text-right text-sm text-indigo-700">
+            <button type="button" onClick={forgetPassword}>Forget Password?</button>
+          </div>
           <button
             type="submit"
             disabled={loading}

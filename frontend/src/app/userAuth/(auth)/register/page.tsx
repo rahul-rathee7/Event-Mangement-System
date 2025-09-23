@@ -56,7 +56,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex items-center justify-center px-4 text-black w-full translate-y-1/3">
+    <div className="flex items-center justify-center px-4 text-black w-full translate-y-1/4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-bold text-center mb-6">Create an Account</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}

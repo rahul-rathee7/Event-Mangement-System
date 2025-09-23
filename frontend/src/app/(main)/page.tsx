@@ -2,14 +2,14 @@
 import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs"
 import axios from 'axios'
-import { useRouter } from 'next/navigation';
+import HeroSection from "@/components/User/HeroSection";
 
 export default function Home() {
   const { user } = useUser();
-  const router = useRouter();
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      if(!user){
       axios.post('http://localhost:5000/api/sendmail', { email: user?.emailAddresses[0].emailAddress, fullname: (user?.fullName ? user.fullName : (user?.firstName ? user.firstName : user?.lastName)) }, {
         headers: {
           'Content-Type': 'application/json'
@@ -23,13 +23,14 @@ export default function Home() {
         }
       }).catch((err) => {
         console.log(err);
-      })
+      })}
     }, 100)
     return () => clearTimeout(timeoutId); 
   }, [user]);
 
   return (
-    <div className="w-full h-screen">
+    <div className="w-full">
+      <HeroSection />
     </div>
   );
 }
