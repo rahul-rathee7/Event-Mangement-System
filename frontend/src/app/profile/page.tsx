@@ -13,13 +13,6 @@ const Page = () => {
   const [description, setdescription] = useState('');
   const [location, setlocation] = useState('');
 
-  const events = [
-    { id: 1, title: 'Tech Conference 2024' },
-    { id: 2, title: 'React Meetup' },
-    { id: 3, title: 'Design Workshop' },
-    { id: 4, title: 'Startup Pitch Event' }
-  ];
-
   const updateProfile = (e) => {
     e.preventDefault();
     seteditProfile(!editProfile);

@@ -29,7 +29,7 @@ const Navbar = () => {
 
     return (
         <header className='flex mt-3 sticky top-0 bg-transparent backdrop-blur-lg z-50 items-center justify-between items-center md:h-20 md:border-2 dark:border-white/40 border-black/40 md:rounded-full w-full mx-auto md:w-11/12 md:px-10 px-3'>
-            <h1 className='text-3xl font-bold text-[#003161]'>Eventify</h1>
+            <h1 className='text-3xl font-bold text-[#003161] dark:text-white'>Eventify</h1>
             <nav className='hidden lg:flex h-full'>
                 <ul className='flex h-full gap-2'>
                     <li className='px-5 h-full flex items-center rounded-lg'><FlipLink className="font-light" onClick={() => router.push('/')}>Home</FlipLink></li>

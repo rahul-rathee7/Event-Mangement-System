@@ -1,5 +1,5 @@
 'use client'
-import { useState} from "react"
+import React, { useState } from "react"
 import { useAuth } from "@/context/userContext"
 import { useRouter } from "next/navigation"
 import { useSignUp, useUser } from "@clerk/nextjs"
@@ -10,7 +10,7 @@ const Page = () => {
   const { isLoaded, signUp, setActive } = useSignUp()
   const { user } = useUser()
   const [form, setForm] = useState({ name: "", email: "", password: "" })
-  const { setIsSignedup } = useAuth();
+  const { setIsSignedup, userType, setUserType } = useAuth();
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [isClicked, setisClicked] = useState(false);
@@ -36,11 +36,11 @@ const Page = () => {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId })
-        if(user?.fullName != null){
+        if (user?.fullName != null) {
           setIsSignedup(true);
           console.log(user);
         }
-        else{
+        else {
           console.log("user is null");
         }
         router.push("/")
@@ -50,6 +50,8 @@ const Page = () => {
 
     } catch (err: any) {
       setError(err.errors?.[0]?.message || "Signup failed")
+      alert(err.errors?.[0]?.message || "Signup failed")
+      console.error("Signup error:", err)
     } finally {
       setLoading(false)
     }
@@ -89,6 +91,16 @@ const Page = () => {
             className="w-full p-3 outline rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
+          <div className="flex items-center space-x-5">
+            <div className="flex items-center gap-1">
+              <input type="radio" name="userType" value="user" id="user" checked={userType === "user"} onChange={() => setUserType("user")} />
+              <label htmlFor="user">User</label>
+            </div>
+            <div className="flex items-center gap-1">
+              <input type="radio" name="userType" value="organizer" id="organizer" checked={userType === "organizer"} onChange={() => setUserType("organizer")} />
+              <label htmlFor="organizer">Organizer</label>
+            </div>
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -97,8 +109,8 @@ const Page = () => {
             {loading ? "Signing up..." : "Sign Up"}
           </button>
         </form>
-        <GoogleSignupButton isClicked={isClicked} setisClicked={setisClicked}/>
-        <div id="clerk-captcha" className={`${isClicked ? 'mt-5' : 'hidden'}`}/>
+        <GoogleSignupButton isClicked={isClicked} setisClicked={setisClicked} />
+        <div id="clerk-captcha" className={`${isClicked ? 'mt-5' : 'hidden'}`} />
         <p className="text-sm text-gray-600 text-center mt-4">
           Already have an account?{" "}
           <a href="/userAuth/login" className="text-indigo-600 hover:underline">

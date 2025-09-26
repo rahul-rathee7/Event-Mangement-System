@@ -1,31 +1,33 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { useParams } from 'next/navigation';
-import axios from 'axios';
+import { useAuth } from '@/context/userContext';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 
 const Page = () => {
     const { id } = useParams();
-    const [fetchEventDetails, setfetchEventDetails] = useState(null);
-    
+    const { user } = useUser();
+    const { events } = useAuth();
+    const router = useRouter();
 
-    useEffect(() => {
-        async function fetchEventDetails() {
-            if(id !== '') {
-                await axios.post('http://localhost:5000/api/events', { id: id }).then((response) => {
-                    setfetchEventDetails(response.data.Event);
-                }).catch((error) => {
-                    console.error('Error fetching event details:', error);
-                });
-            }
+    const fetchEventDetails = events.find(event => event.id === parseInt(id));
+
+    const handleClick = () => {
+        if(!user) {
+            alert("Please login first");
+            router.push(`/userAuth/login`);
         }
-        fetchEventDetails();
-    }, [id]);
+        else{
+            router.push(`/events/${id}`);
+        }
+    }
 
     return (
         <div>
             <div className='w-4/6 mx-auto flex flex-col justify-center gap-5'>
-                <img src={`${fetchEventDetails?.image}`} alt={`Event ${id}`} width={200} height={200} className='mt-10 mx-auto w-full border-2 h-100' />
+                <img src={`${fetchEventDetails?.image}`} alt={`Event ${id}`} width={200} height={"auto"} className='mt-10 mx-auto w-full border-2 h-auto' />
                 <h1 className='text-4xl font-bold mt-5'>{fetchEventDetails?.title}</h1>
                 <div className='flex flex-col gap-1'>
                     <p className='text-xl'>{fetchEventDetails?.date}{fetchEventDetails?.time}</p>
@@ -48,7 +50,7 @@ const Page = () => {
                                 <p className='text-2xl font-semibold'>Tickets</p>
                                 <div className='border-2 p-10 px-10 flex flex-col gap-3 mt-4 bg-gray-100 dark:bg-gray-900 rounded-xl w-4/6'>
                                     <h3 className='text-xl font-semibold'>Tickets Available</h3>
-                                    <button className='bg-blue-500 text-white rounded-md p-2 w-fit px-10'>Register/Book Now</button>
+                                    <button onClick={() => handleClick(fetchEventDetails.id)} className='bg-blue-500 text-white rounded-md p-2 w-fit px-10'>Register/Book Now</button>
                                 </div>
                                 </div>
                                 <div className=''>
