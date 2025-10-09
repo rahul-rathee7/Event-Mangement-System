@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
 import FlipLink from "@/components/ui/text-effect-flipper";
 import ThemeToggleButton from '../ui/theme-toggle-button';
@@ -8,7 +8,7 @@ import { Menu } from 'lucide-react';
 import NavDropDown from '../NavDropDown';
 
 const Navbar = () => {
-    const { user } = useUser();
+    const { user, SignOutButton } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const router = useRouter();
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -39,7 +39,7 @@ const Navbar = () => {
                 </ul>
             </nav>
             <div className='flex gap-6 items-center'>
-                {user?.fullName == null ?
+                {user?.fullname == null ?
                     <button onClick={() => router.push('/userAuth/login')} className='hidden md:flex px-5 py-2 rounded-lg bg-red-500 text-white justify-center items-center gap-2'>
                         Login
                     </button>
@@ -47,10 +47,10 @@ const Navbar = () => {
                     <div className='relative hidden md:block' ref={dropdownRef}>
                         <div className='flex items-center gap-3'>
                             <div className='flex gap-1'>
-                                <FlipLink>{user?.firstName}</FlipLink>
+                                <FlipLink>{user?.fullname}</FlipLink>
                             </div>
                             <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} aria-label="Open user menu">
-                                <img src={user?.imageUrl} alt={user?.fullName || 'User profile picture'} className='w-10 h-10 rounded-full' />
+                                <img src={user?.image} alt={user?.fullname || 'User profile picture'} className='w-10 h-10 rounded-full' />
                             </button>
                         </div>
                         <NavDropDown className={`${isDropdownOpen ? 'block' : 'hidden'}`} />

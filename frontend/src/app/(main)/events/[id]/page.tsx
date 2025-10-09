@@ -2,14 +2,14 @@
 
 import React from 'react'
 import { useParams } from 'next/navigation';
-import { useAuth } from '@/context/userContext';
-import { useUser } from '@clerk/nextjs';
+import { useAuth } from '@/context/UserContext';
+import { useEventContext } from '@/context/EventContext';
 import { useRouter } from 'next/navigation';
 
 const Page = () => {
     const { id } = useParams();
-    const { user } = useUser();
-    const { events } = useAuth();
+    const { user } = useAuth();
+    const { events } = useEventContext();
     const router = useRouter();
 
     const fetchEventDetails = events.find(event => event.id === parseInt(id));

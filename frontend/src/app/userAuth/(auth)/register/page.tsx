@@ -1,19 +1,17 @@
 'use client'
 import React, { useState } from "react"
-import { useAuth } from "@/context/userContext"
+import { useAuth } from "@/context/UserContext"
 import { useRouter } from "next/navigation"
-import { useSignUp, useUser } from "@clerk/nextjs"
 import GoogleSignupButton from "@/components/userAuth/GoogleSignupButton"
 
 const Page = () => {
   const router = useRouter()
-  const { isLoaded, signUp, setActive } = useSignUp()
-  const { user } = useUser()
   const [form, setForm] = useState({ name: "", email: "", password: "" })
-  const { setIsSignedup, userType, setUserType } = useAuth();
+  const { setIsSignedup, user } = useAuth();
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [isClicked, setisClicked] = useState(false);
+  const [role, setRole] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -36,7 +34,7 @@ const Page = () => {
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId })
-        if (user?.fullName != null) {
+        if (user?.fullname != null) {
           setIsSignedup(true);
           console.log(user);
         }
@@ -93,11 +91,11 @@ const Page = () => {
           />
           <div className="flex items-center space-x-5">
             <div className="flex items-center gap-1">
-              <input type="radio" name="userType" value="user" id="user" checked={userType === "user"} onChange={() => setUserType("user")} />
+              <input type="radio" name="userType" value="user" id="user" checked={role === "admin"} onChange={() => setRole("user")} />
               <label htmlFor="user">User</label>
             </div>
             <div className="flex items-center gap-1">
-              <input type="radio" name="userType" value="organizer" id="organizer" checked={userType === "organizer"} onChange={() => setUserType("organizer")} />
+              <input type="radio" name="userType" value="organizer" id="organizer" checked={role === "user"} onChange={setRole("admin")} />
               <label htmlFor="organizer">Organizer</label>
             </div>
           </div>
@@ -110,7 +108,6 @@ const Page = () => {
           </button>
         </form>
         <GoogleSignupButton isClicked={isClicked} setisClicked={setisClicked} />
-        <div id="clerk-captcha" className={`${isClicked ? 'mt-5' : 'hidden'}`} />
         <p className="text-sm text-gray-600 text-center mt-4">
           Already have an account?{" "}
           <a href="/userAuth/login" className="text-indigo-600 hover:underline">

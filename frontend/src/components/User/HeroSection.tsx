@@ -3,11 +3,11 @@
 import React from 'react'
 import { Music, Shrub, Trophy, Monitor, Search, Book, PartyPopper } from 'lucide-react'
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/userContext';
+import { useEventContext } from '@/context/EventContext';
 
 const HeroSection = () => {
     const router = useRouter();
-    const { events } = useAuth();
+    const { FeaturedEvents } = useEventContext();
 
     return (
         <div>
@@ -43,14 +43,15 @@ const HeroSection = () => {
         <div className='mt-20'>
             <h3 className='text-3xl font-bold'>Featured Events</h3>
             <div className='grid grid-cols-3 gap-5 mt-5'>
-                {events.length !== 0 ? events.map((event, index) => (
+                {FeaturedEvents.length !== 0 ? FeaturedEvents.map((event, index) => (
                     index < 3 && (
                     <div key={index} className='border-2 rounded-xl p-5 mb-5'>
                         {event.image && (
                             <div className='mb-3 flex flex-col justify-between h-full'>
                                 <img src={event.image} alt={event.title} className='w-full h-40 object-cover rounded-md' />
                                 <h4 className='text-xl font-semibold mt-2'>{event.title}</h4>   
-                                <p className='text-gray-600'>{event.date} - {event.location}</p>
+                                <p className='text-gray-600'>{event.date}</p>
+                                <p className='text-gray-600'>{event.location}</p>
                                 <button className='mt-3 font-semibold bg-[#003161] hover:bg-[#003161]/80 dark:bg-white dark:text-black dark:hover:bg-white/80 text-white py-2 px-4 rounded-lg self-start' onClick={() => router.push(`/events/${event.id}`)}>View Details</button>
                             </div>
                         )}

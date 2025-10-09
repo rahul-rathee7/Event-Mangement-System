@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSignIn } from '@clerk/nextjs';
+import { useAuth } from '@/context/UserContext';
 
 const Page = () => {
-  const { isLoaded, signIn } = useSignIn();
+  const { isLoaded, useSignIn } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');

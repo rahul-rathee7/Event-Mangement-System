@@ -1,16 +1,16 @@
 'use client'
 
 import React, {useState, useRef, useEffect} from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useAuth } from '@/context/UserContext'
 import EditSvg from '@/../public/assets/edit.png'
 import Image from 'next/image'
 import axios from 'axios'
 
-const EditProfile = ({seteditProfile, description, location}) => {
-    const { user } = useUser();
-    const [Name, setName] = useState(user?.fullName ? user.fullName : '');
-    const [newdescription, setNewdescription] = useState('');
-    const [newlocation, setNewlocation] = useState('');
+const EditProfile = ({seteditProfile}) => {
+    const { user, setProfileImage } = useAuth();
+    const [Name, setName] = useState(user?.fullname ? user.fullname : '');
+    const [newdescription, setNewdescription] = useState(user?.description ? user.description : '');
+    const [newlocation, setNewlocation] = useState(user?.location ? user.location : '');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const updateProfile = (e) => {
@@ -19,21 +19,16 @@ const EditProfile = ({seteditProfile, description, location}) => {
     }
 
     const closeModal = (e) => {
-        e.stopPropagation();
+        e.stopPropagation();   
     }
-
-    useEffect(() => {
-      setNewdescription(description);
-      setNewlocation(location);
-    },[description, location])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try{
-          await axios.post('http://localhost:5000/api/users/update_data', { email: user?.emailAddresses[0].emailAddress, fullName: Name, description: newdescription, location: newlocation }).then((res) => {
+          await axios.post(`${process.env.BACKEND_API_KEY}/users/update_data`, { email: user?.email, fullName: Name, description: newdescription, location: newlocation }).then((res) => {
             if(res.data.success) {
-              alert(res.data.message);
               seteditProfile(false);
+              alert(res.data.message);
             }
             else{
               alert(res.data.message);
@@ -51,8 +46,7 @@ const EditProfile = ({seteditProfile, description, location}) => {
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if(!file) return;
-      await user?.setProfileImage({file});
-
+      setProfileImage(file);
     }
 
   return (
@@ -61,9 +55,9 @@ const EditProfile = ({seteditProfile, description, location}) => {
         <h1 className='text-4xl text-center md:pt-5'>Update Profile</h1>
         <form className='flex flex-col md:w-110 m-auto md:mt-2 p-3 md:p-5 rounded-[50px]'>
             {
-                user?.imageUrl &&
+                user?.image &&
                   <div className='border-2 relative w-fit rounded-full border-red-500 p-[0.2rem] self-center mb-5'>
-                      <img src={user.imageUrl} alt="user-avatar" width={120} height={120} className='rounded-full h-25 md:h-35 w-25 md:w-35' />
+                      <img src={user.image} alt="user-avatar" width={120} height={120} className='rounded-full h-25 md:h-35 w-25 md:w-35' />
                       <Image onClick={handleFileClick} src={EditSvg} alt="svg-icon" width={35} height={35} className="p-1 bg-white absolute bottom-2 rounded-lg right-2" />
                       <input ref={fileInputRef} className='hidden' type="file" accept='image/*' onChange={handleFileChange}/>
                   </div>  

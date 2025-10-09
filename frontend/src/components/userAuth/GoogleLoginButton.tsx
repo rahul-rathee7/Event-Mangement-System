@@ -1,12 +1,12 @@
 "use client";
-import { useSignIn } from "@clerk/nextjs";
+import { useAuth } from "@/context/UserContext";
 import Image from "next/image";
 
 export default function GoogleLoginButton() {
-  const { signIn } = useSignIn();
+  const { useSignIn } = useAuth();
 
   const handleGoogleLogin = () => {
-    signIn?.authenticateWithRedirect({
+    useSignIn?.authenticateWithRedirect({
       strategy: "oauth_google",
       redirectUrl: "/",
       redirectUrlComplete: "/",

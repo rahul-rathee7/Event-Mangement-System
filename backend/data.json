@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "title": "Tech Innovators Conference 2025",
+    "date": "2025-10-05",
+    "time": "10:00 AM - 5:00 PM",
+    "location": "Bangalore International Convention Centre",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600139/event-1_x89jf6.webp",
+    "description": "A gathering of leading tech innovators and startups showcasing the latest advancements in AI, blockchain, and cloud computing."
+  },
+  {
+    "id": 2,
+    "title": "Startup Pitch Night",
+    "date": "2025-10-10",
+    "time": "6:00 PM - 9:00 PM",
+    "location": "WeWork, Gurgaon",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600139/event-2_rfjrco.webp",
+    "description": "An evening where early-stage startups present their business ideas to a panel of investors and mentors."
+  },
+  {
+    "id": 3,
+    "title": "Music Fiesta 2025",
+    "date": "2025-10-15",
+    "time": "7:00 PM - 11:30 PM",
+    "location": "Jawaharlal Nehru Stadium, Delhi",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600139/event-3_t4jfvb.webp",
+    "description": "Experience an electrifying night with live performances from top bands and DJs across India."
+  },
+  {
+    "id": 4,
+    "title": "International Food Carnival",
+    "date": "2025-10-20",
+    "time": "12:00 PM - 10:00 PM",
+    "location": "Phoenix Mall, Mumbai",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600139/event-4_k4wv3g.webp",
+    "description": "Taste cuisines from around the globe with over 100 stalls featuring chefs and restaurants."
+  },
+  {
+    "id": 5,
+    "title": "Women in Leadership Summit",
+    "date": "2025-10-22",
+    "time": "9:00 AM - 4:00 PM",
+    "location": "ITC Grand Chola, Chennai",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600139/event-5_xlbokq.webp",
+    "description": "A conference celebrating women leaders, with discussions on entrepreneurship, empowerment, and leadership."
+  },
+  {
+    "id": 6,
+    "title": "Gaming Expo 2025",
+    "date": "2025-10-25",
+    "time": "11:00 AM - 7:00 PM",
+    "location": "Hyderabad Expo Centre",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600140/event-6_ivpnsl.webp",
+    "description": "India’s biggest gaming event featuring new game launches, VR experiences, and esports tournaments."
+  },
+  {
+    "id": 7,
+    "title": "Marathon for Charity",
+    "date": "2025-10-27",
+    "time": "5:30 AM - 12:00 PM",
+    "location": "Marine Drive, Mumbai",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600139/event-7_tfzvcm.webp",
+    "description": "Run for a cause! Join thousands of participants to support health and education charities."
+  },
+  {
+    "id": 8,
+    "title": "Art & Culture Festival",
+    "date": "2025-11-01",
+    "time": "3:00 PM - 10:00 PM",
+    "location": "Kala Ghoda, Mumbai",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600140/event-8_dzyoty.webp",
+    "description": "Celebrate creativity with art exhibitions, street performances, and cultural showcases."
+  },
+  {
+    "id": 9,
+    "title": "Cricket Legends Meet & Greet",
+    "date": "2025-11-05",
+    "time": "4:00 PM - 7:00 PM",
+    "location": "M. Chinnaswamy Stadium, Bangalore",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600140/event-9_cwhgu8.webp",
+    "description": "Meet legendary cricketers, enjoy autograph sessions, and hear inspiring stories from their careers."
+  },
+  {
+    "id": 10,
+    "title": "Diwali Gala Night",
+    "date": "2025-11-10",
+    "time": "6:00 PM - 12:00 AM",
+    "location": "Taj Palace, Delhi",
+    "image": "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1758600140/event-10_eap2nk.webp",
+    "description": "Celebrate Diwali in grandeur with live music, dance performances, and a festive dinner."
+  }
+]

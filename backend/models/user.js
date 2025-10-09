@@ -6,10 +6,25 @@ let userSchema = new Schema({
         type: String,
         required: true,
     },
-    fullname: {
+    password: {
         type: String,
-        required: true,
+        required: true
     },
+    fullname: {
+        type: String
+    },
+    description: {
+        type: String
+    },
+    location: {
+        type: String
+    },
+    image: {
+        type: String
+    },
+    role: {
+        type: String
+    }
 });
 
 export default mongoose.model("User", userSchema);

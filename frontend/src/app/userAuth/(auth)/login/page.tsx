@@ -1,18 +1,14 @@
 'use client'
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { useSignIn, useUser } from "@clerk/nextjs"
-import { useAuth } from '@/context/userContext'
+import { useAuth } from '@/context/UserContext'
 import GoogleLoginButton from "@/components/userAuth/GoogleLoginButton"
 
 const Page = () => {
   const router = useRouter()
-  const { isLoaded, signIn, setActive } = useSignIn()
-  const { user } = useUser();
   const [form, setForm] = useState({ email: "", password: "" })
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const { setIsSignedup } = useAuth();
+  const { useSignIn, error } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -20,32 +16,22 @@ const Page = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!isLoaded) return
+    if (!useSignIn.isLoaded) return
     setLoading(true)
-    setError("")
 
     try {
-      const result = await signIn.create({
-        identifier: form.email,
+      const result = await useSignIn.create({
+        emailAddress: form.email,
         password: form.password,
       })
-
       if (result.status === "complete") {
-        await setActive({ session: result.createdSessionId })
-        if(user?.fullName != null){
-          setIsSignedup(true);
-          console.log(user);
-        }
-        else{
-          console.log("user is null");
-        }
         router.push("/")
       } else {
         router.push("/verify-email")
       }
 
     } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Login failed")
+      console.error(err)
     } finally {
       setLoading(false)
     }

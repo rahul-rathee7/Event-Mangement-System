@@ -1,13 +1,12 @@
 'use client'
 
 import React, { useEffect } from 'react'
-import { useAuth } from '@/context/userContext';
-import axios from 'axios';
+import { useEventContext } from '@/context/EventContext';
 import { useRouter } from 'next/navigation';
 
 const Page = () => {
     const router = useRouter();
-    const { events, setEvents } = useAuth();
+    const { events } = useEventContext();
 
   return (
     <div className='w-full min-h-[70vh]'>

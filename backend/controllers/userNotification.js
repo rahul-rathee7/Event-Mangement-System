@@ -1,17 +1,18 @@
 import mailsender from "../utils/sendMail.js";
 import user from '../models/user.js';
+import otpVerification from '../models/otpVerification.js';
+import bcrypt from 'bcrypt';
 
 export const userNotification = async (req, res) => {
     const { email, fullname } = req.body;
-    console.log(email, fullname);
 
     if (!email || !fullname) {
-        return res.status(200).json({ message: "Missing email or fullname" });
+        return res.status(200).json({ success: false, message: "Missing email or fullname" });
     }
 
     const existingUser = await user.findOne({ email });
     if (existingUser) {
-        return res.status(200).json({ message: "User already exists" });
+        return res.status(200).json({ success: false, message: "User already exists" });
     }
 
     await user.create({ email, fullname });
@@ -33,8 +34,105 @@ export const userNotification = async (req, res) => {
         </div>
         `
         );
-        return res.status(200).json({ message: 'User created successfully', fullname });
+        return res.status(200).json({ success: true, message: 'User created successfully', fullname });
     } catch (emailError) {
         console.log('Email sending failed:', emailError);
     }
 };
+
+export const forget_password = async (req, res) => {
+    const { email } = req.body;
+    
+    if(!email){
+        return res.status(200).json({ success: false, message: "Missing email" });
+    }
+
+    const existingUser = await user.findOne({ email });
+    if (!existingUser) {
+        return res.status(200).json({ success: false, message: "User does not exist" });
+    }
+
+    const existingOtp = await otpVerification.findOne({ email });
+    if (existingOtp) {
+        await otpVerification.deleteOne({ email });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    await otpVerification.create({ email, otp });
+
+    try {
+        await mailsender.sendMail(
+            email,
+            `Hello ${existingUser.fullname}, your OTP is ${otp}`,
+        );
+        return res.status(200).json({ success: true, message: `Your otp sent successfully`, otp });
+    } catch (emailError) {
+        console.log('Email sending failed:', emailError);
+    }
+}
+
+export const verify_otp = async (req, res) => {
+    const { email, otp } = req.body;
+    
+    if(!email || !otp){
+        return res.status(200).json({ success: false, message: "Missing email or otp" });
+        console.log("Missing email or otp");
+    }
+
+    const existingUser = await user.findOne({ email });
+    if (!existingUser) {
+        return res.status(200).json({ success: false, message: "User does not exist" });
+        console.log("User does not exist");
+    }
+
+    const existingOtp = await otpVerification.findOne({ email });
+    if (!existingOtp) {
+        return res.status(200).json({ success: false, message: "OTP does not exist" });
+        console.log("OTP does not exist");
+    }
+    
+    if(existingOtp.otp == otp){
+        return res.status(200).json({ success: true, message: "OTP verified successfully" });
+        console.log("OTP verified successfully");
+    }
+    else{
+        return res.status(200).json({ success: false, message: "OTP does not match" });
+        console.log("OTP does not match");
+    }
+}
+
+export const reset_password = async (req, res) => {
+    try{
+        const { email, password } = req.body;
+        
+        if(!email || !password){
+            return res.status(200).json({ success: false, message: "Missing email or password" });
+            console.log("Missing email or password");
+        }
+        
+        const existingUser = await user.findOne({ email });
+        if (!existingUser) {
+            return res.status(200).json({ success: false, message: "User does not exist" });
+            console.log("User does not exist");
+        }
+
+        const oldPassword = existingUser.password;
+
+        const passwordMatch = await bcrypt.compare(password, oldPassword);
+        if (passwordMatch) {
+            return res.status(200).json({ success: false, message: "New password cannot be the same as the old password" });
+            console.log("New password cannot be the same as the old password");
+        }
+        
+        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        await user.updateOne({ email }, { $set: { hashedPassword } });
+        
+        return res.status(200).json({ success: true, message: "Password reset successfully" });
+        console.log("Password reset successfully");
+    }
+    catch(err){
+        return res.status(400).json({ success: false, message: "Something went wrong" });
+        console.log(err);
+    }
+}
