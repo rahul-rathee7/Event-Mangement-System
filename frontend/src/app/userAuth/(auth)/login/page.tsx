@@ -25,9 +25,11 @@ const Page = () => {
         password: form.password,
       })
       if (result.status === "complete") {
+        console.log("Login successful")
         router.push("/")
       } else {
-        router.push("/verify-email")
+        console.log("Additional steps required:", result.status)
+        router.push("/userAuth/login/verify-otp")
       }
 
     } catch (err: any) {

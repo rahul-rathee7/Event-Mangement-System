@@ -1,10 +1,11 @@
 import express from 'express'
-import { Check_Cookie, login_user, logout_user } from '../controllers/Auth.js'
+import { checkCookie, loginUser, logoutUser, registerUser } from '../controllers/Auth.js'
 
 const router = express.Router()
 
-router.get('/get-cookie', Check_Cookie)
-router.post('/login', login_user);
-router.get('/logout', logout_user);
+router.get('/get-cookie', checkCookie);
+router.post('/login', loginUser);
+router.post('/register', registerUser);
+router.get('/logout', logoutUser);
 
 export default router;

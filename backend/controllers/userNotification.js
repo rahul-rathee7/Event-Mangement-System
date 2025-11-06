@@ -2,6 +2,7 @@ import mailsender from "../utils/sendMail.js";
 import user from '../models/user.js';
 import otpVerification from '../models/otpVerification.js';
 import bcrypt from 'bcrypt';
+import userMessage from '../models/userMessage.js'
 
 export const userNotification = async (req, res) => {
     const { email, fullname } = req.body;
@@ -76,28 +77,23 @@ export const verify_otp = async (req, res) => {
     
     if(!email || !otp){
         return res.status(200).json({ success: false, message: "Missing email or otp" });
-        console.log("Missing email or otp");
     }
 
     const existingUser = await user.findOne({ email });
     if (!existingUser) {
         return res.status(200).json({ success: false, message: "User does not exist" });
-        console.log("User does not exist");
     }
 
     const existingOtp = await otpVerification.findOne({ email });
     if (!existingOtp) {
         return res.status(200).json({ success: false, message: "OTP does not exist" });
-        console.log("OTP does not exist");
     }
     
     if(existingOtp.otp == otp){
         return res.status(200).json({ success: true, message: "OTP verified successfully" });
-        console.log("OTP verified successfully");
     }
     else{
         return res.status(200).json({ success: false, message: "OTP does not match" });
-        console.log("OTP does not match");
     }
 }
 
@@ -107,13 +103,11 @@ export const reset_password = async (req, res) => {
         
         if(!email || !password){
             return res.status(200).json({ success: false, message: "Missing email or password" });
-            console.log("Missing email or password");
         }
         
         const existingUser = await user.findOne({ email });
         if (!existingUser) {
             return res.status(200).json({ success: false, message: "User does not exist" });
-            console.log("User does not exist");
         }
 
         const oldPassword = existingUser.password;
@@ -121,7 +115,6 @@ export const reset_password = async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, oldPassword);
         if (passwordMatch) {
             return res.status(200).json({ success: false, message: "New password cannot be the same as the old password" });
-            console.log("New password cannot be the same as the old password");
         }
         
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -129,10 +122,60 @@ export const reset_password = async (req, res) => {
         await user.updateOne({ email }, { $set: { hashedPassword } });
         
         return res.status(200).json({ success: true, message: "Password reset successfully" });
-        console.log("Password reset successfully");
     }
     catch(err){
-        return res.status(400).json({ success: false, message: "Something went wrong" });
+        return res.status(500).json({ success: false, message: "Something went wrong" });
+    }
+}
+
+export const store_message = async (req, res) => {
+    try{
+        const { name, email, subject, message } = req.body;
+        if(!name || !email || !subject || !message) {
+            return res.status(200).json({success: false, message: "required data is not fullfilled"})
+        }
+
+        const existing = await userMessage.findOne({email: email});
+
+        if(existing) {
+            existing.subject = subject;
+            existing.message = message;
+            await existing.save();
+            return res.status(200).json({success: true, message: "Message updated successfully"})
+        }
+
+        const user_message = new userMessage({name: name, email: email, subject: subject, message: message})
+        await user_message.save();
+
+        return res.status(200).json({success: true, message: "you have successfully submitted"});
+    }
+    catch(err) {
         console.log(err);
+        return res.status(500).json({success:false, message: "server error"})
+    }
+}
+
+export const two_factor = async ( req, res ) => {
+    const { email, inp } = req.body;
+
+    try{
+        if(!email) {
+            return res.status(200).json({success: false, message: "required data"})
+        }
+
+        const exists = await user.findOne({email: email});
+
+        if(!exists) {
+            return res.status(200).json({success: false, message: "user does not exist"})
+        }
+
+        exists.twoFA = inp;
+        await exists.save();
+
+        return res.status(200).json({success: true, message: "two factor authentication updated successfully", two_factor: inp});
+    }
+    catch(err) {
+        console.log(err);
+        return res.status(500).json({success:false, message: "server error"})
     }
 }

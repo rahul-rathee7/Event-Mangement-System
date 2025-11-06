@@ -11,16 +11,23 @@ let userSchema = new Schema({
         required: true
     },
     fullname: {
-        type: String
+        type: String,
+        required: true
     },
     description: {
         type: String
+    },
+    phone: {
+        type: Number
     },
     location: {
         type: String
     },
     image: {
         type: String
+    },
+    twoFA: {
+        type: Boolean,
     },
     role: {
         type: String
