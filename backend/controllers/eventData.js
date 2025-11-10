@@ -48,7 +48,6 @@ export const all_events = async (req, res) => {
 
 
 export const create_event = async (req, res) => {
-    // accept either `title` or `name` from frontend
     const {
       title: reqTitle,
       name,

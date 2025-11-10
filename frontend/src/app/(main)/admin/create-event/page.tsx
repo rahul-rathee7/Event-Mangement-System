@@ -554,9 +554,6 @@ const CreateEventPage = () => {
                     <label className="inline-flex items-center">
                       <input
                         type="radio"
-                        // FIX: Removed `...register('isOnline')`
-                        // Using `checked` and `onChange` with `setValue` is clearer
-                        // and avoids conflicts with `register`.
                         value="false"
                         checked={!isOnline}
                         onChange={() => setValue('isOnline', false, { shouldValidate: true })}
@@ -567,7 +564,6 @@ const CreateEventPage = () => {
                     <label className="inline-flex items-center">
                       <input
                         type="radio"
-                        // FIX: Removed `...register('isOnline')`
                         value="true"
                         checked={isOnline}
                         onChange={() => setValue('isOnline', true, { shouldValidate: true })}
@@ -587,7 +583,7 @@ const CreateEventPage = () => {
                       placeholder="e.g., https://zoom.us/j/123456789"
                     />
                   ) : (
-                    <Suspense fallback={<div className="w-full py-2 pl-3 h-10 bg-gray-100 dark:bg-gray-700 rounded-md animate-pulse"></div>}>
+                    <Suspense fallback={<div className="w-full h-10 bg-gray-100 dark:bg-gray-700 rounded-md animate-pulse"></div>}>
                       <LocationPicker
                         value={watch('location')}
                         onChange={(value) => setValue('location', value, { shouldValidate: true })}
@@ -609,7 +605,6 @@ const CreateEventPage = () => {
                   <Controller
                     control={control}
                     name="tags"
-                    // fallback isn't a valid prop for Controller, removed it.
                     render={({ field }) => (
                       <TagInput
                         value={field.value}
@@ -674,7 +669,7 @@ const CreateEventPage = () => {
                     <input
                       type="number"
                       {...register('capacity', { valueAsNumber: true })}
-                      className="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
+                      className="block w-full py-2 pl-3 rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
                       placeholder="Leave blank for unlimited capacity"
                     />
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -718,7 +713,7 @@ const CreateEventPage = () => {
                   <textarea
                     {...register('organizerInfo')}
                     rows={3}
-                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
+                    className="block w-full py-2 pl-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
                     placeholder="Additional information about the organizer..."
                   />
                 </FormField>

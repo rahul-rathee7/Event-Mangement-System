@@ -25,7 +25,7 @@ const TicketOptionsEditor = ({ isFree, onChange }) => {
               onChange(newOptions);
             }}
             placeholder="Ticket name"
-            className="w-full sm:w-1/3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
+            className="w-full py-2 pl-3 sm:w-1/3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
           />
           {!isFree && (
             <input
@@ -38,7 +38,7 @@ const TicketOptionsEditor = ({ isFree, onChange }) => {
                 onChange(newOptions);
               }}
               placeholder="Price"
-              className="w-full sm:w-1/4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
+              className="w-full py-2 pl-3 sm:w-1/4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
             />
           )}
           <input
@@ -51,7 +51,7 @@ const TicketOptionsEditor = ({ isFree, onChange }) => {
               onChange(newOptions);
             }}
             placeholder="Quantity"
-            className="w-full sm:w-1/4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
+            className="w-full py-2 pl-3 sm:w-1/4 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
           />
         </div>
       ))}
