@@ -32,7 +32,8 @@ type RegData = z.infer<typeof regSchema>
 export default function Page() {
   const params = useParams()
   const router = useRouter()
-  const eventId = params?.id ?? 'unknown'
+  const rawId = params?.id
+  const eventId = Array.isArray(rawId) ? (rawId[0] ?? 'unknown') : (rawId ?? 'unknown')
 
   const [loadingEvent, setLoadingEvent] = useState(true)
   const [eventData, setEventData] = useState<any | null>(null)
@@ -80,7 +81,7 @@ export default function Page() {
           title: 'Sample Event — Modern Web Summit',
           date: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString(),
           location: 'Grand Hall, Downtown',
-          cover: '/images/event-sample.jpg',
+          cover: '',
           ticketPrice: 25.0,
           ticketTypes: [{ id: 'general', label: 'General', price: 25 }, { id: 'vip', label: 'VIP', price: 75 }],
           description: 'An immersive event about modern web technologies — workshops, talks, and networking.'
@@ -100,13 +101,11 @@ export default function Page() {
     }
   }, [eventData, setValue])
 
-  // optimized submit
   const onSubmit = useCallback(async (data: RegData) => {
     try {
       setSubmitting(true)
-      // if payment required, route to payment flow or lazy widget
       if (paymentRequired) {
-        toast.push('Redirecting to secure payment...', { icon: <Loader2 className="animate-spin" /> })
+        toast('Redirecting to secure payment...', { icon: <Loader2 className="animate-spin" /> })
         await new Promise(r => setTimeout(r, 1200))
       }
 
@@ -246,12 +245,38 @@ export default function Page() {
 
               <div>
                 <label className="text-xs font-medium text-gray-600 dark:text-gray-300">Quantity</label>
-                <div className="flex gap-3">
-                  <button type='button' className='px-3 border-1 rounded-md' onClick={() => setValue('tickets', (watch('tickets') ?? 0) + 1)}>+</button>
-                  <input type="number" {...register('tickets', { valueAsNumber: true })} min={1} className="w-3" />
-                  {/* block w-full rounded-md border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm */}
-                  <button type="button" className='px-3 border-1 rounded-md' onClick={() => setValue('tickets', (watch('tickets') ?? 0) - 1)}>-</button>
-                </div>
+                <Controller
+                  control={control}
+                  name="tickets"
+                  render={({ field }) => (
+                    <div className="flex items-center gap-3 mt-1">
+                      <button
+                        type="button"
+                        className="px-3 py-1 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => field.onChange(Math.max(1, (field.value || 1) - 1))}
+                      >
+                        -
+                      </button>
+                      <input
+                        {...field}
+                        type="number"
+                        min={1}
+                        className="w-16 text-center rounded-md border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          field.onChange(isNaN(val) ? 1 : Math.max(1, val));
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="px-3 py-1 border rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => field.onChange((field.value || 0) + 1)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
+                />
                 {errors.tickets && <p className="text-xs text-red-600 mt-1">{errors.tickets.message}</p>}
               </div>
 

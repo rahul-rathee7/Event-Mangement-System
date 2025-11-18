@@ -49,7 +49,7 @@ const About = () => {
               About Eventify
             </h1>
             <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
-              We're on a mission to connect people through amazing events and create memorable experiences
+              We&apos;re on a mission to connect people through amazing events and create memorable experiences
               that inspire, educate, and entertain.
             </p>
           </div>

@@ -17,7 +17,7 @@ const EventCard = ({ event, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
       whileHover={{ y: -8, scale: 1.02 }}
-      onClick={() => router.push(`/events/${event.id}`)}
+      onClick={() => router.push(`/events/${event._id}`)}
       className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer transition-all duration-300"
     >
       <div className="relative w-full h-48">
@@ -73,7 +73,6 @@ const EventCard = ({ event, index }) => {
   );
 };
 
-// Skeleton loader for events while loading
 const EventSkeleton = () => (
   <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md">
     <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
@@ -96,6 +95,7 @@ const EventsPage = () => {
   
   // Categories - normally you'd get these from your API
   const categories = useMemo(() => {
+    if (!events) return ['All'];
     const allCategories = ['All'];
     events.forEach(event => {
       if (event.category && !allCategories.includes(event.category)) {

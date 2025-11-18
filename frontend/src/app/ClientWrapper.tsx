@@ -1,7 +1,6 @@
 'use client';
 
-import { AuthProvider, useAuth } from "@/context/UserContext";
-import { EventContextProvider } from "@/context/EventContext";
+import { useAuth } from "@/context/UserContext";
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const { datafetched } = useAuth();
@@ -19,10 +18,6 @@ function AppContent({ children }: { children: React.ReactNode }) {
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <EventContextProvider>
-        <AppContent>{children}</AppContent>
-      </EventContextProvider>
-    </AuthProvider>
+      <AppContent>{children}</AppContent>
   );
 }

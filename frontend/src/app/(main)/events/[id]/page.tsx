@@ -38,7 +38,6 @@ const EventSkeleton = () => (
   </div>
 );
 
-// Related event card component
 const RelatedEventCard = ({ event }) => (
   <motion.div 
     whileHover={{ y: -5 }}
@@ -72,7 +71,6 @@ const EventDetailsPage = () => {
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   
-  // Simulate loading state for smoother transitions
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -81,12 +79,12 @@ const EventDetailsPage = () => {
     return () => clearTimeout(timer);
   }, []);
   
-  const eventDetails = events.find(event => event.id === parseInt(id));
+  const eventDetails = events.find(event => event._id === id);
   
   // Find related events (same category or similar)
   const relatedEvents = events
     .filter(event => 
-      event.id !== parseInt(id) && 
+      event._id !== id && 
       (event.category === eventDetails?.category || 
        event.tags?.some(tag => eventDetails?.tags?.includes(tag)))
     )
@@ -335,7 +333,7 @@ const EventDetailsPage = () => {
                   <div className="space-y-4">
                     {relatedEvents.length > 0 ? (
                       relatedEvents.map((event, index) => (
-                        <RelatedEventCard key={event.id} event={event} />
+                        <RelatedEventCard key={event._id} event={event} />
                       ))
                     ) : (
                       <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-4 text-center">

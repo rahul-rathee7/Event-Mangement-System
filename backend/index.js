@@ -12,6 +12,11 @@ import db from './utils/db.js';
 dotenv.config();
 const app = express();
 
+// app.use((req, res, next) => {
+//     console.log(req.method, req.url);
+//     next();
+// });
+
 app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(express.json());
 app.use(cookieparser());

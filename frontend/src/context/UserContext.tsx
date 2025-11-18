@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from 'sonner';
 
 type User = {
-  id: string
+  _id: string
   email: string,
   fullname: string,
   description: string,

@@ -4,7 +4,7 @@ import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { ArrowLeft, BarChart2, LineChart, Zap, Clock } from 'lucide-react'
+import { ArrowLeft, BarChart2, Zap, Clock } from 'lucide-react'
 
 const HeavyChart = dynamic(() => import('@/components/admin/DetailedChart'), {
   ssr: false,
@@ -61,21 +61,17 @@ const AnalyticsPage = () => {
     total: 186,
     growth: 14,
     conversion: 6.2,
-    avgDuration: 52 // minutes
+    avgDuration: 52
   })
 
   useEffect(() => {
     let mounted = true
-    // lightweight initial fetch (replace with real API)
     const load = async () => {
       try {
-        // simulate fast server response
         await new Promise(res => setTimeout(res, 220))
         if (!mounted) return
-        // set the fetched data (replace with real payload)
         setSummary(prev => ({
           ...prev,
-          // jitter to feel live but small
           attendees: prev.attendees.map(v => Math.max(5, Math.round(v + (Math.random() * 6 - 3)))),
           total: prev.attendees.reduce((a, b) => a + b, 0),
           growth: Math.round(8 + Math.random() * 8),
@@ -85,11 +81,8 @@ const AnalyticsPage = () => {
       } finally {
         if (!mounted) return
         setLoading(false)
-        // defer any heavy non-critical work
         if ('requestIdleCallback' in window) {
-          // @ts-ignore
           requestIdleCallback(() => {
-            // HeavyChart will mount when needed — we do nothing here, letting dynamic import load on render
           })
         }
       }
@@ -100,7 +93,6 @@ const AnalyticsPage = () => {
 
   const goBack = useCallback(() => router.back(), [router])
   const openDeepChart = useCallback(() => {
-    // navigating to a dedicated analytics page (keeps current lightweight)
     router.push('/admin/analytics/deep')
   }, [router])
 
@@ -173,7 +165,6 @@ const AnalyticsPage = () => {
           </div>
 
           <div className="md:col-span-2">
-            {/* Heavy chart is dynamically imported and client-only — reduces initial bundle for the page */}
             <HeavyChart data={summary.attendees} height={160} />
           </div>
         </div>

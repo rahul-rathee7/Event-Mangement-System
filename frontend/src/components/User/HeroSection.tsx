@@ -95,7 +95,9 @@ const EventCard = ({ event, index }) => {
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span>{event.date}</span>
+            <span>{new Date(event.startDate).toLocaleDateString()}</span>
+            <span>&nbsp;-&nbsp;</span>
+            <span>{new Date(event.endDate).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center mb-3 text-gray-600 dark:text-gray-300">
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -108,7 +110,7 @@ const EventCard = ({ event, index }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="w-full font-semibold bg-[#003161] hover:bg-[#003161]/90 dark:bg-[#1e3a60] dark:hover:bg-[#1e3a60]/90 text-white py-3 px-4 rounded-lg flex justify-center items-center gap-2 transition-all"
-            onClick={() => router.push(`/events/${event.id}`)}
+            onClick={() => router.push(`/events/${event._id}`)}
           >
             View Details <ArrowRight size={18} />
           </motion.button>
@@ -249,7 +251,6 @@ const HeroSection = () => {
           </div>
         </motion.div>
 
-        {/* Featured Events Section */}
         <div className="my-20">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold dark:text-white">Featured Events</h2>
@@ -264,7 +265,7 @@ const HeroSection = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {FeaturedEvents.length !== 0 ? (
               FeaturedEvents.slice(0, 3).map((event, index) => (
-                <EventCard key={event.id || index} event={event} index={index} />
+                <EventCard key={event._id || index} event={event} index={index} />
               ))
             ) : (
               Array(3).fill(0).map((_, i) => <SkeletonCard key={i} />)
@@ -272,7 +273,6 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* How It Works Section */}
         <div className="my-20">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white">How It Works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mt-10 relative">

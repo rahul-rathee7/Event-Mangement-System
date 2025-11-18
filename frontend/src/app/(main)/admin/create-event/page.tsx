@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react'
+import React, { useState, useCallback, useEffect, Suspense, lazy, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm, Controller } from 'react-hook-form'
 import Image from 'next/image'
@@ -12,6 +12,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { toast, Toaster } from 'sonner'
 import { useEventContext } from '@/context/EventContext'
+import { useAuth } from '@/context/UserContext'
 
 const CategorySelector = lazy(() => import('@/components/admin/CategorySelector'))
 const TicketOptionsEditor = lazy(() => import('@/components/admin/TicketOptionsEditor'))
@@ -32,11 +33,8 @@ const eventSchema = z.object({
   isPublic: z.boolean().default(true),
   tags: z.array(z.string()).optional(),
   organizerInfo: z.string().optional(),
-  // FIX: Added ticketOptions to the schema so its data can be saved and validated.
   ticketOptions: z.array(z.any()).optional(),
 })
-// FIX: Added a schema-level refinement check.
-// This ensures that if an end date is provided, it *must* be after the start date.
 .refine(data => {
   if (data.endDate) {
     return data.endDate > data.startDate;
@@ -44,7 +42,7 @@ const eventSchema = z.object({
   return true; // No end date, so validation passes
 }, {
   message: 'End date must be after the start date',
-  path: ['endDate'], // Tells react-hook-form to show this error under the endDate field
+  path: ['endDate'],
 });
 
 const StepIndicator = ({ currentStep, steps, goToStep }) => {
@@ -247,6 +245,7 @@ const CreateEventPage = () => {
   const [isSuccess, setIsSuccess] = useState(false)
   const [coverImage, setCoverImage] = useState(null)
   const { sendData } = useEventContext();
+  const { user } = useAuth();
   // FIX: useTheme was imported but not used.
   // const { theme } = useTheme()
   
@@ -352,6 +351,7 @@ const CreateEventPage = () => {
       // Add the cover image file and ticket options to the data
       const eventData = {
         ...data,
+        organizerInfo: user?.id || '',
         coverImage: coverImage?.file || null,
         // FIX: `data.ticketOptions` now contains the data from the editor.
         ticketOptions: data.ticketOptions, 

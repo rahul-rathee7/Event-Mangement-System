@@ -19,10 +19,15 @@ import "swiper/css/effect-cards";
 import { cn } from "@/lib/utils";
 
 const Skiper47 = ({events}) => {
-  const images = events.map((event) => ({
-    src: event.image,
-    alt: event.title,
-  }));
+  if (!events || !Array.isArray(events) || events.length === 0) {
+  return <div>No events available</div>;
+}
+
+const images = events.map(event => ({
+  src: event.image,
+  alt: event.title,
+}));
+
 
   return (
     <div className="flex h-full w-full items-center justify-center overflow-hidden">
