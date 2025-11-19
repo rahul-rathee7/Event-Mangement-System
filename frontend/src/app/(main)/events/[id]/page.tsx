@@ -6,8 +6,9 @@ import Image from 'next/image'
 import { useAuth } from '@/context/UserContext'
 import { useEventContext } from '@/context/EventContext'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, MapPin, Users, Star, Share2, Heart, Ticket, ArrowRight, ChevronDown } from 'lucide-react'
+import { Calendar, Clock, MapPin, Users, Mail, Share2, Heart, Ticket, ArrowRight, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
+import axios from 'axios'
 
 // Loading skeleton
 const EventSkeleton = () => (
@@ -70,6 +71,7 @@ const EventDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [ organizerInfo, setOrganizerInfo ] = useState(null);
   
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,7 +83,6 @@ const EventDetailsPage = () => {
   
   const eventDetails = events.find(event => event._id === id);
   
-  // Find related events (same category or similar)
   const relatedEvents = events
     .filter(event => 
       event._id !== id && 
@@ -102,8 +103,26 @@ const EventDetailsPage = () => {
   const toggleFavorite = (e) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
-    // Add logic to save to user favorites
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      
+    }, 200);
+    async function fetchOrganizerInfo() {
+    if (user && eventDetails) {
+      const res = await axios.post(`http://localhost:5000/api/users/getUserByName`, {
+        id: eventDetails.organizerInfo
+      }, { withCredentials: true });
+      if(res.data.success){
+        setOrganizerInfo(res.data.user);
+        console.log("Organizer Info:", res.data.user);
+        return;
+      }
+    }
+  }
+  fetchOrganizerInfo();
+  }, [user, eventDetails]);
   
   if (!eventDetails && !isLoading) {
     return (
@@ -300,7 +319,7 @@ const EventDetailsPage = () => {
                   <div className="flex items-center">
                     <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mr-4">
                       <Image 
-                        src={eventDetails?.organizerImage || '/assets/default-avatar.png'} 
+                        src={organizerInfo?.image || '/assets/user.png'} 
                         alt="Organizer" 
                         width={48}
                         height={48}
@@ -308,10 +327,10 @@ const EventDetailsPage = () => {
                       />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{eventDetails?.organizer || 'Event Organizer'}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{organizerInfo?.fullname || 'Event Organizer'}</p>
                       <div className="flex items-center mt-1">
-                        <Star className="w-4 h-4 text-amber-500 mr-1 fill-amber-500" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">4.8 (42 events)</span>
+                        <Mail className="w-4 h-4 text-gray-400 mr-1" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{organizerInfo?.email}</span> 
                       </div>
                     </div>
                   </div>

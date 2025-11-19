@@ -73,8 +73,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
       } catch (err) {
         console.log("Backend API unavailable, using Nominatim fallback");
         
-        // Fallback to Nominatim
-        const nominatimRes = await axios.get<LocationResult[]>( // REFINEMENT: Type the response
+        const nominatimRes = await axios.get<LocationResult[]>(
           "https://nominatim.openstreetmap.org/search",
           {
             params: {
@@ -83,7 +82,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
               limit: 1
             },
             headers: {
-              'User-Agent': 'EventManagementSystem/1.0' // Good practice
+              'User-Agent': 'EventManagementSystem/1.0'
             }
           }
         );
@@ -160,17 +159,12 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
       toast.error('Image must be smaller than 5MB');
       return;
     }
-    
-    // Note: setProfileImage seems to just update the local state.
-    // Ensure this function in your context *also* handles the actual upload.
-    // If it doesn't, this logic needs to be expanded to upload the file.
     try {
       setIsUploading(true);
-      // Assuming setProfileImage handles both local state update AND upload
       await setProfileImage(file); 
       toast.success('Profile picture updated');
     } catch (err) {

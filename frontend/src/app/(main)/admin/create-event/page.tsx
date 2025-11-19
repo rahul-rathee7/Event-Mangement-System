@@ -351,9 +351,8 @@ const CreateEventPage = () => {
       // Add the cover image file and ticket options to the data
       const eventData = {
         ...data,
-        organizerInfo: user?.id || '',
+        organizerInfo: user?._id || '',
         coverImage: coverImage?.file || null,
-        // FIX: `data.ticketOptions` now contains the data from the editor.
         ticketOptions: data.ticketOptions, 
       }
       

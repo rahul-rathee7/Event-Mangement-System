@@ -7,7 +7,6 @@ import {
   User, Mail, Phone, Calendar, MapPin, Settings, Key, LogOut, Edit, Camera, CheckCircle,
   Clock, AlertTriangle, Activity, Zap, Moon, Sun
 } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import { useAuth } from "@/context/UserContext"
 import axios from 'axios'
 import EditProfile from '@/components/EditProfile'
@@ -62,8 +61,7 @@ const ActivityItem = ({ activity }) => (
 
 
 const ProfilePage = () => {
-  const { theme, setTheme } = useTheme()
-  const { user, logout } = useAuth() || {}
+  const { user } = useAuth() || {}
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('personal')
   const [activities, setActivities] = useState([])
@@ -93,13 +91,6 @@ const ProfilePage = () => {
   const openEdit = () => {
     setEditOpen(true)
   }
-  const handleSignOut = async () => {
-    if (typeof logout === 'function') {
-      await logout()
-    } else {
-      window.location.href = '/userAuth/login'
-    }
-  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -107,14 +98,6 @@ const ProfilePage = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Admin Profile</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">Manage your account settings and preferences</p>
-        </div>
-        <div className="mt-4 md:mt-0 flex items-center gap-3">
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200" aria-label="Toggle theme">
-            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={handleSignOut} className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none">
-            <LogOut size={16} className="mr-2" /> Sign Out
-          </motion.button>
         </div>
       </motion.div>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
@@ -128,7 +111,7 @@ const ProfilePage = () => {
                   ) : (
                     <div className="relative h-24 w-24 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden bg-white">
                       <Image
-                        src={localUser?.image || '/images/avatar-placeholder.png'}
+                        src={localUser?.image || '/assets/user.png'}
                         alt={`${localUser?.fullname || 'User'} Avatar`}
                         width={96}
                         height={96}

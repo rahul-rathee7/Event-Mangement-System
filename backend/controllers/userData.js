@@ -3,11 +3,9 @@ import axios from 'axios';
 
 export const users_data = async (req, res) => {
     const { email } = req.body;
-    console.log(email);
 
     try {
         const User = await user.find({ email });
-        console.log(User);
 
         if(!User){
             return res.status(400).json({ success: false, message: "No users found" });
@@ -65,4 +63,21 @@ export const user_location = async (req, res) => {
     console.error('Geocoding error:', error);
     res.status(500).json({ error: 'Failed to fetch location data' });
   }
+}
+
+export const getUserByName = async (req, res) => {
+    const { id } = req.body;
+
+    try {
+        const userData = await user.findById(id);
+
+        if (!userData) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        return res.status(200).json({ success: true, user: userData });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
 }
