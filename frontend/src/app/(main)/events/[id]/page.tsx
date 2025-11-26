@@ -116,7 +116,6 @@ const EventDetailsPage = () => {
       }, { withCredentials: true });
       if(res.data.success){
         setOrganizerInfo(res.data.user);
-        console.log("Organizer Info:", res.data.user);
         return;
       }
     }

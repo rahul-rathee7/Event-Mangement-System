@@ -65,12 +65,11 @@ export const all_events = async (req, res) => {
     });
   }
 };
-// ...existing code...
+
 export const create_event = async (req, res) => {
   try {
     let imageUrl = "";
 
-    // If frontend uploaded file in multipart/form-data, multer fills req.file
     if (req.file) {
       const base64Image = req.file.buffer.toString('base64');
       const uploaded = await cloudinary.uploader.upload(`data:${req.file.mimetype};base64,${base64Image}`, {
@@ -104,11 +103,13 @@ export const create_event = async (req, res) => {
       tags,
       ticketOptions,
       organizerInfo,
+      registered_users
     } = req.body;
+
+    console.log(ticketOptions);
 
     const title = reqTitle || name;
 
-    // 3. VALIDATION
     const requiredFields = { title, startDate, organizerInfo };
     const missingFields = Object.entries(requiredFields)
       .filter(([key, value]) => !value)
@@ -138,6 +139,7 @@ export const create_event = async (req, res) => {
       ticketOptions: ticketOptions ? JSON.parse(ticketOptions) : [],
       image: imageUrl,
       organizerInfo,
+      registered_users
     });
 
     const savedEvent = await newEvent.save();
@@ -155,3 +157,28 @@ export const create_event = async (req, res) => {
     });
   }
 };
+
+
+export const registered_users = async (req, res) => {
+  const { id } = req.params;
+
+  try{
+    if(id) {
+      res.status(400).json({message: "id is not provided"});
+    }
+
+    const event_id = await events.findById(id);
+    console.log(event_id);
+
+    if(event_id) {
+      res.status(400).json({message: "event does not exist in database"})
+    }
+
+    res.status(200).json({message: "user successfully registered", })
+  }
+
+  catch(err){
+    console.log(err);
+    res.status(500).json({message:"server error"})
+  }
+}

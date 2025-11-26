@@ -23,12 +23,6 @@ type Props = {
   onChange?: (v: Value) => void
   disabled?: boolean
 }
-
-/**
- * TicketSelector
- * - Controlled component to pick ticket type and quantity.
- * - Lightweight, optimized for re-renders.
- */
 export default function TicketSelector({ ticketTypes = [], value, onChange, disabled = false }: Props) {
   const selected = useMemo(() => {
     if (!value && ticketTypes.length) return { ticketTypeId: ticketTypes[0].id, quantity: 1 }

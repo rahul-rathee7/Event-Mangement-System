@@ -246,8 +246,6 @@ const CreateEventPage = () => {
   const [coverImage, setCoverImage] = useState(null)
   const { sendData } = useEventContext();
   const { user } = useAuth();
-  // FIX: useTheme was imported but not used.
-  // const { theme } = useTheme()
   
   const { 
     control, 
@@ -255,15 +253,12 @@ const CreateEventPage = () => {
     handleSubmit, 
     watch, 
     setValue,
-    // FIX: Get `trigger` and `reset` from useForm.
-    // `trigger` lets us manually run validation.
-    // `reset` lets us clear the form after success.
     trigger,
     reset,
-    formState: { errors, isValid, isDirty }
+    formState: { errors, isValid }
   } = useForm({
     resolver: zodResolver(eventSchema),
-    mode: 'onChange', // This mode runs validation on every change
+    mode: 'onChange',
     defaultValues: {
       name: '',
       description: '',
@@ -278,7 +273,6 @@ const CreateEventPage = () => {
       isPublic: true,
       tags: [],
       organizerInfo: '',
-      // FIX: Added ticketOptions to defaultValues to match the schema.
       ticketOptions: [],
     }
   })
@@ -286,34 +280,16 @@ const CreateEventPage = () => {
   const isFree = watch('isFree')
   const isOnline = watch('isOnline')
   
-  // Steps for the form wizard
   const steps = ['Basic Info', 'Details', 'Tickets & Capacity', 'Preview']
-  
-  // FIX: This array maps step numbers to the field names in that step.
-  // This is crucial for our new validation logic.
   const stepFields = [
-    ['name', 'shortDescription', 'description'], // Step 0 fields
-    ['startDate', 'endDate', 'location', 'category'], // Step 1 fields
-    ['ticketPrice', 'capacity'], // Step 2 fields
-    [] // Step 3 (Preview) has no fields to validate
+    ['name', 'shortDescription', 'description'],
+    ['startDate', 'endDate', 'location', 'category'],
+    ['ticketPrice', 'capacity'],
+    []
   ];
-  
-  // FIX: This function was flawed. It only *checked* for existing errors,
-  // it didn't *run* validation. This logic is now inside `nextStep`.
-  // const isStepValid = useCallback((step) => { ... })
-  
-  // Step navigation handlers
-  
-  // FIX: Rewrote `nextStep` to be `async` and use `trigger()`.
-  // This is the *correct* way to do multi-step validation.
   const nextStep = useCallback(async () => {
-    // 1. Get the field names for the *current* step.
     const fieldsToValidate = stepFields[currentStep];
-    
-    // 2. Manually trigger validation for only those fields.
     const isValid = await trigger(fieldsToValidate);
-
-    // 3. If validation passes, move to the next step.
     if (isValid && currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -321,11 +297,6 @@ const CreateEventPage = () => {
       // 4. If validation fails, show an error toast.
       toast.error('Please fix the errors before proceeding.');
     }
-    
-    // Original broken logic:
-    // if(!watch('name') || !watch('shortDescription')) return toast.error("Please fill all required fields in Basic Info."); 
-    // if (currentStep < steps.length - 1 && isStepValid(currentStep)) { ... }
-    
   }, [currentStep, steps.length, trigger])
   
   const prevStep = useCallback(() => {
@@ -348,7 +319,6 @@ const CreateEventPage = () => {
   const onSubmit = useCallback(async (data) => {
     try {
       setIsSubmitting(true)
-      // Add the cover image file and ticket options to the data
       const eventData = {
         ...data,
         organizerInfo: user?._id || '',
@@ -681,9 +651,9 @@ const CreateEventPage = () => {
                   <Suspense fallback={<div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-md animate-pulse"></div>}>
                     <TicketOptionsEditor 
                       isFree={isFree}
-                      // FIX: This now saves the data to the form state.
-                      // Before, it was just `console.log`.
                       onChange={(options) => setValue('ticketOptions', options, { shouldValidate: true })}
+                      initialOptions={watch('ticketOptions')}
+                      ticketprice={watch('ticketPrice')}
                     />
                   </Suspense>
                 </FormField>
@@ -706,15 +676,6 @@ const CreateEventPage = () => {
                       List this event publicly
                     </label>
                   </div>
-                </FormField>
-                
-                <FormField label="Organizer Information (Optional)" error={errors.organizerInfo?.message}>
-                  <textarea
-                    {...register('organizerInfo')}
-                    rows={3}
-                    className="block w-full py-2 pl-3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm"
-                    placeholder="Additional information about the organizer..."
-                  />
                 </FormField>
               </motion.div>
             )}

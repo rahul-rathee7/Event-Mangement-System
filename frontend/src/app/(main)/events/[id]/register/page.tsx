@@ -8,11 +8,10 @@ import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { User, Mail, Ticket, Calendar, MapPin, CheckCircle2, Loader2 } from 'lucide-react'
+import { Ticket, Calendar, MapPin, CheckCircle2, Loader2 } from 'lucide-react'
 import axios from 'axios'
 
 const PaymentWidget = lazy(() => import('@/components/events/PaymentWidget'))
-const TicketSelector = lazy(() => import('@/components/events/TicketSelector'))
 
 const Shimmer = ({ className = '' }: { className?: string }) => (
   <div className={`animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 ${className}`} />
@@ -96,8 +95,8 @@ export default function Page() {
   }, [eventId])
 
   useEffect(() => {
-    if (eventData?.ticketTypes?.length) {
-      setValue('ticketType', eventData?.ticketTypes[0].id)
+    if (eventData?.ticketOptions?.length) {
+      setValue('ticketType', eventData?.ticketOptions[0].id)
     }
   }, [eventData, setValue])
 
@@ -109,10 +108,8 @@ export default function Page() {
         await new Promise(r => setTimeout(r, 1200))
       }
 
-      // simulate api registration
       await new Promise(r => setTimeout(r, 800))
       toast.success('Registration successful ✅')
-      // optionally redirect to success page
       router.replace(`/events/${eventId}/register/success`)
     } catch (err) {
       console.error(err)
@@ -122,11 +119,10 @@ export default function Page() {
     }
   }, [paymentRequired, router, eventId])
 
-  // derived values memoized
   const summary = useMemo(() => {
     if (!eventData) return null
     const price = eventData?.ticketPrice ?? 0
-    const selected = eventData?.ticketTypes?.find((t: any) => t.id === ticketType) ?? { price }
+    const selected = eventData?.ticketOptions?.find((t: any) => t._id === ticketType) ?? { price }
     return {
       title: eventData?.title,
       date: new Date(eventData?.date).toLocaleString(),
@@ -175,11 +171,11 @@ export default function Page() {
                   </div>
 
                   <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {(eventData?.ticketTypes ?? []).map((t: any) => (
-                      <div key={t.id} className="p-3 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20">
+                    {(eventData?.ticketOptions ?? []).map((t: any) => (
+                      <div key={t._id} className="p-3 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20">
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-white">{t.label}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">{t.name}</div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">Per ticket</div>
                           </div>
                           <div className="text-sm font-semibold text-gray-900 dark:text-white">${t.price.toFixed(2)}</div>
@@ -209,24 +205,6 @@ export default function Page() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
               <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-300">Full name</label>
-                <div className="mt-1 relative">
-                  <input {...register('name')} placeholder="Your name" className="block w-full py-2 pl-3 rounded-md border-gray-300 border-2 focus:border-blue-500 focus:border-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white sm:text-sm" />
-                  <div className="absolute right-3 top-3 text-gray-400"><User size={14} /></div>
-                </div>
-                {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
-              </div>
-
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-300">Email</label>
-                <div className="mt-1 relative">
-                  <input {...register('email')} placeholder="you@example.com" className="block w-full py-2 pl-3 rounded-md border-gray-300 border-2 focus:border-blue-500 focus:border-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white sm:text-sm" />
-                  <div className="absolute right-3 top-3 text-gray-400"><Mail size={14} /></div>
-                </div>
-                {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>}
-              </div>
-
-              <div>
                 <label className="text-xs font-medium text-gray-600 dark:text-gray-300">Ticket type</label>
                 <div className="mt-1">
                   <Controller
@@ -235,7 +213,7 @@ export default function Page() {
                     render={({ field }) => (
                       <select {...field} className="block w-full rounded-md border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm">
                         <option value="">Select ticket</option>
-                        {(eventData?.ticketTypes ?? []).map((t: any) => <option key={t.id} value={t.id}>{t.label} — ${t.price}</option>)}
+                        {(eventData?.ticketOptions ?? []).map((t: any) => <option key={t._id} value={t._id}>{t.name} — ${t.price.toFixed(2)}</option>)}
                       </select>
                     )}
                   />
