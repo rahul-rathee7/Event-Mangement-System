@@ -18,11 +18,8 @@ const Shimmer = ({ className = '' }: { className?: string }) => (
 )
 
 const regSchema = z.object({
-  name: z.string().min(2, 'Enter your name'),
-  email: z.string().email('Enter a valid email'),
   tickets: z.number().int().min(1, 'Select at least 1 ticket'),
   ticketType: z.string().min(1, 'Choose ticket type'),
-  phone: z.string().optional(),
   agree: z.boolean().refine(v => v === true, 'You must agree to the terms'),
 })
 
@@ -34,27 +31,23 @@ export default function Page() {
   const rawId = params?.id
   const eventId = Array.isArray(rawId) ? (rawId[0] ?? 'unknown') : (rawId ?? 'unknown')
 
-  const [loadingEvent, setLoadingEvent] = useState(true)
-  const [eventData, setEventData] = useState<any | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [paymentRequired, setPaymentRequired] = useState(false)
+  const [showPaymentWidget, setShowPaymentWidget] = useState(false)
+  const [eventData, setEventData] = useState<any | null>(null)
+  const [loadingEvent, setLoadingEvent] = useState(false)
 
   const {
     register,
-    handleSubmit,
     control,
     watch,
     setValue,
-    formState: { errors, isValid }
+    formState: { errors }
   } = useForm<RegData>({
     resolver: zodResolver(regSchema),
     mode: 'onChange',
     defaultValues: {
-      name: '',
-      email: '',
       tickets: 1,
       ticketType: '',
-      phone: '',
       agree: false
     }
   })
@@ -71,7 +64,6 @@ export default function Page() {
         const json = res.data.Event
         if (!mounted) return
         setEventData(json)
-        setPaymentRequired(Boolean(json?.ticketPrice && json?.ticketPrice > 0))
       } catch(err) {
         console.log(err);
         if (!mounted) return
@@ -82,10 +74,9 @@ export default function Page() {
           location: 'Grand Hall, Downtown',
           cover: '',
           ticketPrice: 25.0,
-          ticketTypes: [{ id: 'general', label: 'General', price: 25 }, { id: 'vip', label: 'VIP', price: 75 }],
+          ticketOptions: [{ name: 'general', label: 'General', price: 25 }, { name: 'vip', label: 'VIP', price: 75 }],
           description: 'An immersive event about modern web technologies — workshops, talks, and networking.'
         })
-        setPaymentRequired(true)
       } finally {
         setLoadingEvent(false)
       }
@@ -96,28 +87,9 @@ export default function Page() {
 
   useEffect(() => {
     if (eventData?.ticketOptions?.length) {
-      setValue('ticketType', eventData?.ticketOptions[0].id)
+      setValue('ticketType', eventData?.ticketOptions[0]._id)
     }
   }, [eventData, setValue])
-
-  const onSubmit = useCallback(async (data: RegData) => {
-    try {
-      setSubmitting(true)
-      if (paymentRequired) {
-        toast('Redirecting to secure payment...', { icon: <Loader2 className="animate-spin" /> })
-        await new Promise(r => setTimeout(r, 1200))
-      }
-
-      await new Promise(r => setTimeout(r, 800))
-      toast.success('Registration successful ✅')
-      router.replace(`/events/${eventId}/register/success`)
-    } catch (err) {
-      console.error(err)
-      toast.error('Registration failed — try again')
-    } finally {
-      setSubmitting(false)
-    }
-  }, [paymentRequired, router, eventId])
 
   const summary = useMemo(() => {
     if (!eventData) return null
@@ -129,9 +101,28 @@ export default function Page() {
       location: eventData?.location,
       cover: eventData?.cover,
       unitPrice: selected.price ?? price,
-      total: ((selected.price ?? price) * (tickets || 1)).toFixed(2)
+      total: ((selected.price ?? price) * (tickets || 1))
     }
   }, [eventData, tickets, ticketType])
+
+  const onSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      setSubmitting(true)
+      if (Number(summary?.total ?? 0) > 0) {
+        setShowPaymentWidget(true)
+      } else {
+        await new Promise(r => setTimeout(r, 800))
+        toast.success('Registration successful ✅')
+        router.replace(`/events/${eventId}/register/success`)
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error('Registration failed — try again')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
@@ -203,7 +194,7 @@ export default function Page() {
               <Ticket /> Register
             </h3>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
+            <form onSubmit={onSubmit} className="mt-4 space-y-3">
               <div>
                 <label className="text-xs font-medium text-gray-600 dark:text-gray-300">Ticket type</label>
                 <div className="mt-1">
@@ -272,18 +263,17 @@ export default function Page() {
                   </div>
                   <div>
                     <div className="text-xs text-gray-500">Total</div>
-                    <div className="font-semibold">${summary?.total ?? '—'}</div>
+                    <div className="font-semibold">${(summary?.total ?? 0).toFixed(2)}</div>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4">
-                <button type="submit" disabled={submitting || !isValid} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                  {submitting ? <><Loader2 className="animate-spin" /> Processing...</> : `Pay & Register`}
+                <button type="submit" onClick={onSubmit} className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                  {submitting ? <><Loader2 className="animate-spin" /> Processing...</> : (Number(summary?.total ?? 0) > 0) ? 'Proceed to Payment' : 'Register'}
                 </button>
               </div>
             </form>
-
             <div className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center justify-center gap-2">
                 <CheckCircle2 className="text-green-500" />
@@ -300,17 +290,37 @@ export default function Page() {
               <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-500">Total</span>
-                  <span className="font-medium">${summary?.total ?? '—'}</span>
+                  <span className="font-medium">${(summary?.total ?? 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
           </div>
         </aside>
       </motion.div>
-      {paymentRequired && (
-        <Suspense fallback={<div className="mt-6"><Shimmer className="h-24 rounded-lg" /></div>}>
-          <PaymentWidget eventId={eventId} amount={Number(summary?.total ?? 0)} />
-        </Suspense>
+      {showPaymentWidget && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-xl max-w-md w-full">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Complete Payment</h3>
+              <button onClick={() => setShowPaymentWidget(false)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <Suspense fallback={<div className="mt-6"><Shimmer className="h-24 rounded-lg" /></div>}>
+              <PaymentWidget
+                eventId={eventId}
+                amount={Number(summary?.total ?? 0)}
+                onSuccess={() => {
+                  setShowPaymentWidget(false)
+                  toast.success('Registration successful ✅')
+                  router.replace(`/events/${eventId}/register/success`)
+                }}
+              />
+            </Suspense>
+          </div>
+        </div>
       )}
 
       <style jsx>{`

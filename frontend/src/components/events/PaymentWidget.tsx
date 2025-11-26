@@ -13,23 +13,16 @@ type Props = {
   onError?: (err: any) => void
 }
 
-/**
- * Lightweight payment widget stub.
- * - Simulates a secure payment flow.
- * - Replace simulatePayment(...) with real payment integration (Stripe/PayPal) when ready.
- */
 export default function PaymentWidget({ eventId, amount, currency = 'USD', onSuccess, onError }: Props) {
   const [processing, setProcessing] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const simulatePayment = useCallback(async () => {
-    // Replace with real payment API call (create session / token -> redirect / confirm)
+  const simulatePayment = async () => {
     setProcessing(true)
     setError(null)
     try {
-      await new Promise((r) => setTimeout(r, 1200)) // simulate network
-      // simulate occasional failure
+      await new Promise((r) => setTimeout(r, 1200))
       if (Math.random() < 0.06) throw new Error('Payment processor error')
       const receipt = {
         id: `rcpt_${Date.now()}`,
@@ -46,8 +39,8 @@ export default function PaymentWidget({ eventId, amount, currency = 'USD', onSuc
     } finally {
       setProcessing(false)
     }
-  }, [eventId, amount, currency, onSuccess, onError])
-
+  } 
+  
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="mt-6 bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
       <div className="flex items-center gap-3">
@@ -69,11 +62,10 @@ export default function PaymentWidget({ eventId, amount, currency = 'USD', onSuc
           <>
             <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">Select a payment method and confirm.</div>
 
-            {/* Minimal card UI: expandable to real inputs */}
             <div className="rounded-lg border border-gray-100 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Image src="/icons/visa.svg" alt="Visa" width={36} height={24} className="object-contain" />
+                  <Image src={'/assets/visa-icon.svg'} alt="Visa" width={36} height={24} className="object-contain" />
                   <div className="text-sm font-medium">Card (Demo)</div>
                 </div>
                 <div className="text-sm text-gray-500">•••• •••• •••• 4242</div>

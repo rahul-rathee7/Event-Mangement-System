@@ -18,31 +18,31 @@ type Value = {
 }
 
 type Props = {
-  ticketTypes: TicketType[]
+  ticketOptions: TicketType[]
   value?: Value
   onChange?: (v: Value) => void
   disabled?: boolean
 }
-export default function TicketSelector({ ticketTypes = [], value, onChange, disabled = false }: Props) {
+export default function TicketSelector({ ticketOptions = [], value, onChange, disabled = false }: Props) {
   const selected = useMemo(() => {
-    if (!value && ticketTypes.length) return { ticketTypeId: ticketTypes[0].id, quantity: 1 }
-    return value ?? { ticketTypeId: ticketTypes[0]?.id ?? '', quantity: 1 }
-  }, [value, ticketTypes])
+    if (!value && ticketOptions.length) return { ticketTypeId: ticketOptions[0].id, quantity: 1 }
+    return value ?? { ticketTypeId: ticketOptions[0]?.id ?? '', quantity: 1 }
+  }, [value, ticketOptions])
 
   const changeType = useCallback((id: string) => {
     onChange?.({ ticketTypeId: id, quantity: 1 })
   }, [onChange])
 
   const setQuantity = useCallback((q: number) => {
-    const max = ticketTypes.find(t => t.id === selected.ticketTypeId)?.available ?? Infinity
+    const max = ticketOptions.find(t => t.id === selected.ticketTypeId)?.available ?? Infinity
     const qty = Math.max(1, Math.min(Math.floor(q), Number.isFinite(max) ? max : q))
     onChange?.({ ticketTypeId: selected.ticketTypeId, quantity: qty })
-  }, [onChange, selected.ticketTypeId, ticketTypes])
+  }, [onChange, selected.ticketTypeId, ticketOptions])
 
   return (
     <div className="space-y-3">
       <div className="grid gap-3 sm:grid-cols-2">
-        {ticketTypes.map(t => {
+        {ticketOptions.map(t => {
           const active = t.id === selected.ticketTypeId
           return (
             <motion.button
@@ -81,7 +81,7 @@ export default function TicketSelector({ ticketTypes = [], value, onChange, disa
           <div className="px-3 text-sm font-medium">{selected.quantity || 1}</div>
           <button
             onClick={() => setQuantity((selected.quantity || 1) + 1)}
-            disabled={disabled || (ticketTypes.find(t => t.id === selected.ticketTypeId)?.available ?? Infinity) <= (selected.quantity || 1)}
+            disabled={disabled || (ticketOptions.find(t => t.id === selected.ticketTypeId)?.available ?? Infinity) <= (selected.quantity || 1)}
             className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
             aria-label="Increase"
           >
