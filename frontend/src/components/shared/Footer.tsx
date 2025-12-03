@@ -1,11 +1,11 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useAuth } from '@/context/UserContext'
 import { Facebook, Twitter, Instagram, Linkedin, ArrowRight } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 const FooterLink = ({ href, children }) => (
   <Link 
@@ -34,11 +34,20 @@ const Footer = () => {
   const { user } = useAuth();
   const router = useRouter();
   const currentYear = new Date().getFullYear();
+  const [HomePage, setHomePage] = React.useState(false);
+  const pathname = usePathname(); 
+  
+  useEffect(() => {
+    if (pathname === '/') {
+      setHomePage(true);
+    } else {
+      setHomePage(false);
+    }
+  }, [user, pathname]);
 
   return (
     <footer className="bg-gradient-to-b from-[#00234a] to-[#003161] dark:from-gray-900 dark:to-black text-white">
-      {/* CTA Section */}
-      <motion.div 
+      {HomePage && ( <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
@@ -70,7 +79,7 @@ const Footer = () => {
             </motion.button>
           </div>
         </div>
-      </motion.div>
+      </motion.div> ) }
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-6 lg:gap-12 mb-12">
           <div className="lg:col-span-1">

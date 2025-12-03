@@ -68,22 +68,13 @@ export const EventContextProvider = ({ children }: { children: React.ReactNode }
             if (body.tags) fd.append('tags', JSON.stringify(body.tags));
             if (body.ticketOptions) fd.append('ticketOptions', JSON.stringify(body.ticketOptions));
             fd.append('organizerInfo', body.organizerInfo || '');
-
-// If payload includes a File (cover image) — append it
-// ...existing code...
-// If payload includes a File (cover image) — append it
 const cover = (payload as any).coverImage;
 if (cover) {
-    // payload.coverImage could be:
-    // - a File (client passed file directly)
-    // - an object { file, preview }
-    // - a string (already uploaded Cloudinary URL)
     if (cover instanceof File) {
         fd.append('image', cover);
     } else if (cover && (cover as any).file instanceof File) {
         fd.append('image', (cover as any).file);
     } else if (typeof cover === 'string') {
-        // send as imageUrl so backend can save it directly
         fd.append('imageUrl', cover);
     }
 }

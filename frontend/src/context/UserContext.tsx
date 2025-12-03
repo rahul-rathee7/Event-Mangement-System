@@ -14,6 +14,7 @@ type User = {
   role: string,
   twoFA: boolean,
   phone: number
+  registered_events: string
 }
 
 type SignInParams = {

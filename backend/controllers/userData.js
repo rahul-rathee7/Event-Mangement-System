@@ -1,4 +1,5 @@
 import user from '../models/user.js';
+import events from '../models/eventData.js'
 import axios from 'axios';
 
 export const users_data = async (req, res) => {
@@ -80,4 +81,42 @@ export const getUserByName = async (req, res) => {
         console.log(error);
         return res.status(500).json({ success: false, message: "Server error" });
     }
+}
+
+
+export const registered_events = async (req, res) => {
+  const { userId, eventId } = req.body;
+
+  try{
+    if(userId === undefined || eventId === undefined) {
+      res.status(400).json({message: "id is not provided"});
+    }
+
+    const user_id = await user.findById(userId);
+
+    if(!user_id) {
+      res.status(400).json({message: "user does not exist in database"})
+    }
+
+    const event_id = await events.findById(eventId);
+
+    if(!event_id) {
+      res.status(400).json({message: "event does not exist in database"})
+    }
+
+    const alreadyRegistered = user_id.register_event_id.includes(userId);
+
+    if(alreadyRegistered){
+      return res.status(200).json({message: "user already registered for the event"})
+    }
+
+    user_id.register_event_id.push(eventId);
+    await user_id.save();
+    res.status(200).json({message: "user successfully registered", })
+  }
+
+  catch(err){
+    console.log(err);
+    res.status(500).json({message:"server error"})
+  }
 }

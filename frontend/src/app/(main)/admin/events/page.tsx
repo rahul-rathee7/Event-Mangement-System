@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useEventContext } from '@/context/EventContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -18,7 +18,7 @@ const EventCard = ({ event, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
       whileHover={{ y: -8, scale: 1.02 }}
-      onClick={() => router.push(`/events/${event._id}`)}
+      onClick={() => router.push(`/admin/events/${event._id}`)}
       className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl cursor-pointer transition-all duration-300"
     >
       <div className="relative w-full h-48">
@@ -119,14 +119,11 @@ const EventsPage = () => {
       
       return matchesSearch && matchesCategory;
     });
-  }, [events, searchTerm, selectedCategory, user?.id]);
+  }, [events, searchTerm, selectedCategory, user?._id]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Filters Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide max-w-full">
             {categories.map((category) => (

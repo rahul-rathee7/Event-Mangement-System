@@ -31,6 +31,10 @@ let userSchema = new Schema({
     },
     role: {
         type: String
+    },
+    register_event_id: {
+        type: [String],
+        default: []
     }
 });
 

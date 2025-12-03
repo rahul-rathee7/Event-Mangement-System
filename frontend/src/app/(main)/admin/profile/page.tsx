@@ -4,11 +4,10 @@ import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Mail, Phone, Calendar, MapPin, Settings, Key, LogOut, Edit, Camera, CheckCircle,
-  Clock, AlertTriangle, Activity, Zap, Moon, Sun
+  User, Mail, Phone, Calendar, MapPin, Settings, Key, Edit, Camera, CheckCircle,
+  Clock, AlertTriangle, Activity
 } from 'lucide-react'
 import { useAuth } from "@/context/UserContext"
-import axios from 'axios'
 import EditProfile from '@/components/EditProfile'
 
 const Shimmer = ({ className = '' }) => (

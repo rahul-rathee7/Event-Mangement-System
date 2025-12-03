@@ -1,4 +1,5 @@
 import events from "../models/eventData.js";
+import user from "../models/user.js";
 import { v2 as cloudinary } from 'cloudinary'
 
 export const event_data = async (req, res) => {
@@ -160,20 +161,33 @@ export const create_event = async (req, res) => {
 
 
 export const registered_users = async (req, res) => {
-  const { id } = req.params;
+  const { userId, eventId } = req.body;
 
   try{
-    if(id) {
+    if(userId === undefined || eventId === undefined) {
       res.status(400).json({message: "id is not provided"});
     }
 
-    const event_id = await events.findById(id);
-    console.log(event_id);
+    const user_id = await user.findById(userId);
 
-    if(event_id) {
+    if(!user_id) {
+      res.status(400).json({message: "user does not exist in database"})
+    }
+
+    const event_id = await events.findById(eventId);
+
+    if(!event_id) {
       res.status(400).json({message: "event does not exist in database"})
     }
 
+    const alreadyRegistered = event_id.register_user_id.includes(userId);
+
+    if(alreadyRegistered){
+      return res.status(200).json({message: "user already registered for the event"})
+    }
+
+    event_id.register_user_id.push(userId);
+    await event_id.save();
     res.status(200).json({message: "user successfully registered", })
   }
 

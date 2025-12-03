@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react'
 import { useAuth } from '@/context/UserContext'
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
@@ -8,6 +8,7 @@ import { Calendar, Users, Clock, Activity, TrendingUp, AlertCircle, CheckCircle,
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { useEventContext } from '@/context/EventContext';
 
 // ...existing code...
 
@@ -136,6 +137,8 @@ QuickActionButton.displayName = 'QuickActionButton';
 
 const Page = () => {
   const { user } = useAuth();
+  const { events } = useEventContext();
+  const [FilteredEvents, setFilteredEvents] = useState([]);
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -148,6 +151,10 @@ const Page = () => {
   const [recentEvents, setRecentEvents] = useState([]);
 
   useEffect(() => {
+    setFilteredEvents(events.filter(event => event.organizerInfo === user?._id));
+  },[events, user?._id])
+
+  useEffect(() => {
     let mounted = true;
 
     // fetch minimal data, defer heavy stuff (analytics) to idle
@@ -156,7 +163,7 @@ const Page = () => {
         // Replace with real API call; lightweight response expected
         const data = await new Promise(resolve => {
           setTimeout(() => resolve({
-            stats: { totalEvents: 42, totalUsers: 128, pendingEvents: 3 },
+            stats: { totalEvents: 6, totalUsers: 128, pendingEvents: 3 },
             recent: [
               { id: 1, title: 'Tech Fest 2025', date: '2025-10-10', status: 'Approved' },
               { id: 2, title: 'Music Night', date: '2025-10-12', status: 'Pending' },

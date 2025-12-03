@@ -1,17 +1,19 @@
 'use client'
 
-import React, { useMemo, useCallback, useState } from 'react'
+import React, { useMemo, useCallback, useState, useEffect } from 'react'
 import { useRouter, useSearchParams, useParams } from 'next/navigation'
 import { CheckCircle2, Share2, Download, Calendar, ExternalLink, Link as LinkIcon } from 'lucide-react'
+import axios from 'axios'
+import { useAuth } from '@/context/UserContext'
 
 export default function RegistrationSuccessPage() {
   const router = useRouter()
   const params = useParams()
   const search = useSearchParams()
+  const { user } = useAuth();
 
-  // demo fallback: if no query present show a demo ticket that's accessible
   const demoFallback = {
-    id: 'demo-event',
+    id: 'event',
     name: 'Demo Conference 2025',
     ticket: 'Demo General',
     order: 'DEMO-0001'
@@ -30,16 +32,6 @@ export default function RegistrationSuccessPage() {
   }, [eventId, orderId])
 
   const qrUrl = useMemo(() => `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(ticketUrl)}`, [ticketUrl])
-
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(ticketUrl)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1800)
-    } catch {
-      alert('Copy failed — please copy manually.')
-    }
-  }, [ticketUrl])
 
   const handlePrint = useCallback(() => {
   const win = window.open('', '_blank')
@@ -74,6 +66,25 @@ export default function RegistrationSuccessPage() {
 
   const openEvent = useCallback(() => router.push(`/events/${eventId}`), [router, eventId])
 
+  useEffect(() => {
+    async function sendRegistrationConfirmation() {
+      try {
+        const res = await axios.post('http://localhost:5000/api/events/registered-users', {userId:user._id, eventId}, {withCredentials: true})
+        const res1 = await axios.post('http://localhost:5000/api/users/registered-events', {userId:user._id, eventId}, {withCredentials: true})
+        if(res.status && res1.status) {
+          console.log(res.data.message);
+          console.log(res.data.message);
+        }
+        else{
+          console.log(res.data.message);
+        }
+      } catch (error) {
+        console.error('Error sending registration confirmation:', error)
+      }
+    }
+    sendRegistrationConfirmation()
+  }, [params])
+
   return (
     <main className="max-w-3xl mx-auto p-6">
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col sm:flex-row items-center gap-6">
@@ -96,7 +107,6 @@ export default function RegistrationSuccessPage() {
                 <LinkIcon size={14} /> <span className="truncate">{ticketUrl}</span>
               </div>
             </div>
-
             <div className="rounded-md bg-gray-50 dark:bg-gray-900/40 p-3 flex items-center gap-3">
               <img src={qrUrl} alt="Ticket QR code" width="88" height="88" className="rounded bg-white" />
             </div>

@@ -306,9 +306,6 @@ const CreateEventPage = () => {
     }
   }, [currentStep])
   
-  // FIX: Simplified `goToStep`.
-  // We only need to check if the step being clicked is *behind* or *at* the current step.
-  // The UI's `disabled` prop already prevents jumping ahead.
   const goToStep = useCallback((step) => {
     if (step <= currentStep) {
       setCurrentStep(step);
@@ -340,9 +337,8 @@ const CreateEventPage = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [coverImage, reset]) // FIX: Added `reset` to dependency array
+  }, [coverImage, reset])
   
-  // Cleanup function for image previews
   useEffect(() => {
     return () => {
       if (coverImage?.preview) {
@@ -511,7 +507,6 @@ const CreateEventPage = () => {
                         wrapperClassName="block w-full"
                         calendarClassName="dark:bg-gray-800 dark:text-white dark:border-gray-700"
                         placeholderText="Optional"
-                        // FIX: End date cannot be before the start date
                         minDate={watch('startDate') || new Date()}
                       />
                     )}

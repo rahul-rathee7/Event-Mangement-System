@@ -12,7 +12,7 @@ const createToken = (res, user) => {
   res.cookie('token', token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false // set true in production
+    secure: false
   })
 
   return token
@@ -89,7 +89,7 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
     const userPng = "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1760082438/user_vhcgsk.png"
 
-    const newUser = await User.create({ email, password: hashedPassword, fullname, image:  userPng, role,  })
+    const newUser = await User.create({ email, password: hashedPassword, fullname, image:  userPng, role,  twoFA: false })
 
     const token = createToken(res, newUser)
 
