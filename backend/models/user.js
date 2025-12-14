@@ -2,13 +2,17 @@ import mongoose from "mongoose";
 let Schema = mongoose.Schema;
 
 let userSchema = new Schema({
+    googleId: {
+        type: String,
+    },
     email: {
         type: String,
         required: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     fullname: {
         type: String,

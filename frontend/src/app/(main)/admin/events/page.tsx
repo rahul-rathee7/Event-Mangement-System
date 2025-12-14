@@ -88,14 +88,11 @@ const EventSkeleton = () => (
 
 // Main Component
 const EventsPage = () => {
-  const router = useRouter();
   const { events, isLoading } = useEventContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [showFilters, setShowFilters] = useState(false);
   const { user } = useAuth();
   
-  // Categories - normally you'd get these from your API
   const categories = useMemo(() => {
     if (!events) return ['All'];
     const allCategories = ['All'];

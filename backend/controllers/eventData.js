@@ -107,8 +107,6 @@ export const create_event = async (req, res) => {
       registered_users
     } = req.body;
 
-    console.log(ticketOptions);
-
     const title = reqTitle || name;
 
     const requiredFields = { title, startDate, organizerInfo };

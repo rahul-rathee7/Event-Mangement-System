@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import session from 'express-session';
+import passport from 'passport';
 import sendmail from  './routes/mail.js';
 import users from './routes/users.js';
 import events from './routes/events.js';
@@ -8,6 +10,7 @@ import events from './routes/events.js';
 import cookieparser from 'cookie-parser'; 
 import Auth from './routes/Auth.js'
 import db from './utils/db.js';
+import './config/passport.js'; // Passport configuration
 
 dotenv.config();
 const app = express();
@@ -17,9 +20,20 @@ const app = express();
 //     next();
 // });
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:8081'], credentials: true }));
 app.use(express.json());
 app.use(cookieparser());
+
+// Express session middleware
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/api/events", events);
 app.use("/api/auth", Auth);

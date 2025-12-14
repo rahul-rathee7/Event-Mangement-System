@@ -8,7 +8,6 @@ const Page = () => {
   const { useSignUp, isSignedup } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("")
-  const [isClicked, setisClicked] = useState(false);
   const [role, setRole] = useState("user");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +67,7 @@ const Page = () => {
             autoComplete="new-password"
             value={form.password}
             onChange={handleChange}
-            className="w-full p-3 outline rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-3 outline rounded-xl focus:outline-none focus:ring-2 focus:ring-2 focus:ring-indigo-500"
             required
           />
           <div className="flex items-center space-x-5">
@@ -89,7 +88,7 @@ const Page = () => {
             {isSignedup ? "Signing up..." : "Sign Up"}
           </button>
         </form>
-        <GoogleSignupButton isClicked={isClicked} setisClicked={setisClicked} />
+        <GoogleSignupButton />
         <p className="text-sm text-gray-600 text-center mt-4">
           Already have an account?{" "}
           <a href="/userAuth/login" className="text-indigo-600 hover:underline">

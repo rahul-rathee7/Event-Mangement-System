@@ -95,6 +95,10 @@ const EventDetailsPage = () => {
     if (!user) {
       alert("Please login first");
       router.push(`/userAuth/login`);
+    }
+    else if(user._id === organizerInfo?._id) {
+      alert("You are the organizer of this event");
+      router.push(`/events`);
     } else {
       router.push(`/events/${id}/register`);
     }
