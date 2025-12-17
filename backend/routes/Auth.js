@@ -17,7 +17,6 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', 
   passport.authenticate('google', { failureRedirect: 'http://localhost:3000/userAuth/login', session: false }),
   (req, res) => {
-    // Successful authentication
     const user = req.user;
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'your_jwt_secret', {
       expiresIn: '1h',
@@ -27,7 +26,7 @@ router.get('/google/callback',
         httpOnly: true,
         secure: process.env.NODE_ENV === 'development' ? false : true, // Use secure cookies in production
         sameSite: 'strict',
-        maxAge: 3600000 // 1 hour
+        maxAge: 3600000
     });
 
     res.redirect('http://localhost:3000/');
