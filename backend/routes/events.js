@@ -3,7 +3,7 @@ import { event_data, featured_events, all_events } from '../controllers/eventDat
 
 const router = express.Router();
 
-router.post('/', event_data);
+router.get('/event/:id', event_data);
 router.get('/featured-events', featured_events);
 router.get('/get-all', all_events);
 

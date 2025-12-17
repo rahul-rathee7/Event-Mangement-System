@@ -1,10 +1,12 @@
 import events from '../data.json' with { type: 'json' };
 
 export const event_data = async (req, res) => {
-    const { id } = req.body;
+    const id = req.params.id;
+    console.log(id);
 
     try {
         const Event = events.find(event => event.id === parseInt(id));
+        console.log(Event);
 
         if(!Event){
             return res.status(200).json({ success: false, message: "No event found" });

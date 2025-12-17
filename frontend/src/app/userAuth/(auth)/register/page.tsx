@@ -1,57 +1,39 @@
 'use client'
 import React, { useState } from "react"
 import { useAuth } from "@/context/UserContext"
-import { useRouter } from "next/navigation"
 import GoogleSignupButton from "@/components/userAuth/GoogleSignupButton"
 
 const Page = () => {
-  const router = useRouter()
   const [form, setForm] = useState({ name: "", email: "", password: "" })
-  const { setIsSignedup, user } = useAuth();
-  const [loading, setLoading] = useState(false)
+  const { useSignUp, isSignedup } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("")
   const [isClicked, setisClicked] = useState(false);
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("user");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignUp = async () => {
+    if (!useSignUp.create) return;
+    await useSignUp.create({
+      emailAddress: form.email,
+      password: form.password,
+      fullname: form.name,
+      role: role
+    })
+  }
+  
+   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!isLoaded) return
-    setLoading(true)
-    setError("")
-
+    setLoading(true);
     try {
-      const result = await signUp.create({
-        emailAddress: form.email,
-        password: form.password,
-      })
-      await signUp.update({
-        firstName: form.name,
-      })
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" })
-      if (result.status === "complete") {
-        await setActive({ session: result.createdSessionId })
-        if (user?.fullname != null) {
-          setIsSignedup(true);
-          console.log(user);
-        }
-        else {
-          console.log("user is null");
-        }
-        router.push("/")
-      } else {
-        router.push("/verify-email")
-      }
-
+      await handleSignUp();
     } catch (err: any) {
-      setError(err.errors?.[0]?.message || "Signup failed")
-      alert(err.errors?.[0]?.message || "Signup failed")
-      console.error("Signup error:", err)
+      console.error(err)
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -91,11 +73,11 @@ const Page = () => {
           />
           <div className="flex items-center space-x-5">
             <div className="flex items-center gap-1">
-              <input type="radio" name="userType" value="user" id="user" checked={role === "admin"} onChange={() => setRole("user")} />
+              <input type="radio" name="userType" value="user" id="user" defaultChecked onChange={() => setRole("user")} />
               <label htmlFor="user">User</label>
             </div>
             <div className="flex items-center gap-1">
-              <input type="radio" name="userType" value="organizer" id="organizer" checked={role === "user"} onChange={setRole("admin")} />
+              <input type="radio" name="userType" value="organizer" id="organizer" onChange={() => setRole("admin")} />
               <label htmlFor="organizer">Organizer</label>
             </div>
           </div>
@@ -104,7 +86,7 @@ const Page = () => {
             disabled={loading}
             className="w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition disabled:opacity-50"
           >
-            {loading ? "Signing up..." : "Sign Up"}
+            {isSignedup ? "Signing up..." : "Sign Up"}
           </button>
         </form>
         <GoogleSignupButton isClicked={isClicked} setisClicked={setisClicked} />

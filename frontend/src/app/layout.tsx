@@ -1,8 +1,11 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import "./(main)/globals.css";
+import "@/app/(main)/globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AuthProvider } from "@/context/UserContext";
 import { EventContextProvider } from '@/context/EventContext'
+import ClientWrapper from '@/app/ClientWrapper'
+import { AdminProvider } from "@/context/AdminContext";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -19,7 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <AuthProvider>
               <EventContextProvider>
-                {children}
+                <AdminProvider>
+                  <ClientWrapper>{children}<Toaster position="top-center" richColors closeButton/></ClientWrapper>
+                </AdminProvider>
               </EventContextProvider>
             </AuthProvider>
           </ThemeProvider>

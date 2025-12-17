@@ -20,7 +20,6 @@ app.use("/api/events", events);
 app.use("/api/auth", Auth);
 app.use("/api/sendmail", sendmail);
 app.use("/api/users", users);
-// app.use("/", verifyToken);
 
 app.listen(process.env.PORT || 5000, () => {
     db();

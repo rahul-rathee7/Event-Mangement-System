@@ -1,7 +1,8 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from "react"
 import axios from 'axios'
-import {useRouter} from 'next/navigation'
+import { useRouter } from "next/navigation"
+import { toast } from 'sonner';
 
 type User = {
   id: string
@@ -9,7 +10,7 @@ type User = {
   fullname: string,
   description: string,
   location: string,
-  image: string,
+  image: string
   role: string
 }
 
@@ -24,49 +25,56 @@ type SignInResult = {
   userId?: string
 }
 
+type SignUpParams = {
+  emailAddress: string
+  password: string
+  fullname: string
+  role: string
+}
+
+type SignUpResult = {
+  status: "complete" | "needs_email_verification" | "needs_registration"
+  token?: string
+  userId?: string
+}
+
 type AuthContextType = {
   user: User | null
   useSignIn: {
     isLoaded: boolean
     create: (params: SignInParams) => Promise<SignInResult>
   }
-  setActive: (params: { token: string }) => Promise<void>
+  useSignUp: {
+    isLoaded: false
+    create: (params: SignUpParams) => Promise<SignUpResult>
+    update: (params: { fullname: string }) => Promise<void>
+    prepareEmailAddressVerification: (params: { strategy: string }) => Promise<void>
+  }
   isSignedup: boolean
   setIsSignedup: React.Dispatch<React.SetStateAction<boolean>>
+  datafetched: boolean
   otp: number
   setOtp: React.Dispatch<React.SetStateAction<number>>
   SignOutButton: () => void
   setProfileImage: (file: File) => Promise<void>
   EditUserDetails: () => void
   error: string
+  enableTwoFA: () => void
+  twoFA: boolean
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [otp, setOtp] = useState(0)
   const [user, setUser] = useState<User | null>(null)
   const [isSignedup, setIsSignedup] = useState(false)
-  const [isLoaded, setIsLoaded] = useState(true)
   const [error, setError] = useState('');
-  const router = useRouter();
-
-  const setActive = async ({ token }: { token: string }) => {
-    localStorage.setItem('sessionToken', token)
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    try {
-      const userResponse = await axios.get(`${process.env.BACKEND_API_KEY}/users/profile`)
-      setUser(userResponse.data.user)
-    } catch (error) {
-      console.error('Failed to fetch user profile after login:', error)
-      localStorage.removeItem('sessionToken')
-      setUser(null)
-      throw new Error("Login failed: Could not fetch user details.")
-    }
-  }
+  const [datafetched, setDatafetched] = useState(false);
+  const [twoFA, setTwoFA] = useState(false);
+  const router = useRouter()
 
   const signInClient = {
-    isLoaded: isLoaded,
+    isLoaded: true,
     create: async ({ emailAddress, password }: SignInParams): Promise<SignInResult> => {
       try {
         const response = await axios.post(`http://localhost:5000/api/auth/login`, {
@@ -105,8 +113,56 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const signUpClient = {
+    create: async ({ emailAddress, password, fullname, role }: SignUpParams): Promise<SignUpResult> => {
+      setIsSignedup(true);
+      try {
+        const response = await axios.post(`http://localhost:5000/api/auth/register`, {
+          email: emailAddress,
+          password: password,
+          fullname: fullname,
+          role: role
+        }, { withCredentials: true })
+        if (response.status && response.data.token) {
+          const { id, email, fullname, ...rest } = response.data.user;
+          const formattedUser = { id, email, fullname, ...rest };
+          setUser(formattedUser);
+          if(response.data.message) {
+            alert(response.data.message)
+          }
+          router.push("/");
+          return { status: "complete" };
+        }
+        else {
+          setError(response.data.message || "Login failed")
+        }
+
+        if (response.data.needsVerification) {
+          return { status: "needs_email_verification" }
+        }
+
+        if (response.data.userNotFound) {
+          return { status: "needs_registration" }
+        }
+
+        throw new Error(response.data.message || "An unexpected error occurred.")
+
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          if (error.response.status === 401 || error.response.status === 400) {
+            throw new Error(error.response.data.message || "Invalid email or password.")
+          }
+        }
+        throw error
+    }
+    finally {
+      setIsSignedup(false);
+    }
+    }
+  }
+
   const SignOutButton = async () => {
-    await axios.get("http://localhost:5000/api/auth/logout");
+    await axios.get("http://localhost:5000/api/auth/logout", {withCredentials: true});
     setUser(null)
     delete axios.defaults.headers.common['Authorization']
   }
@@ -132,14 +188,17 @@ useEffect(() => {
       const res = await axios.get('http://localhost:5000/api/auth/get-cookie', { withCredentials: true });
       if(res.data.success) {
         setUser(res.data.user);
+        setDatafetched(true);
       }
     }
     catch(err: any) {
       if(err.response) {
         console.log(err.response.data.message);
+        setDatafetched(true);
       }
       else{
         console.error(err);
+        setDatafetched(true);
       }
     }
     }
@@ -152,19 +211,24 @@ const setProfileImage = async ( fileInputRef: React.RefObject<HTMLInputElement>)
   setUser((prev) => prev ? {...prev, image: file.name} : prev);
 }
 
+const enableTwoFA = () => {
+  setTwoFA(!twoFA);
+  toast.success(`Two-Factor Authentication ${!twoFA ? 'Enabled' : 'Disabled'}`);
+}
+
 return (
   <AuthContext.Provider value={{
     user,
     useSignIn: signInClient,
-    error,
-    setActive,
-    otp,
-    setOtp,
+    useSignUp: signUpClient,
     isSignedup,
     setIsSignedup,
     SignOutButton,
     setProfileImage,
-    EditUserDetails
+    EditUserDetails,
+    datafetched,
+    enableTwoFA,
+    twoFA
   }}>
     {children}
   </AuthContext.Provider>
