@@ -1,36 +1,25 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-/**
- * Send email using nodemailer
- * @param {string} to - Recipient email
- * @param {string} subject - Subject of the email
- * @param {string} text - Plain text fallback
- * @param {string} html - HTML content
- */
+const sendMail = async (to, subject, text, html) => {
+  try {
+    const data = await resend.emails.send({
+      from: 'Eventify <onboarding@resend.dev>', // works in dev
+      to,
+      subject,
+      text,
+      ...(html && { html }),
+    });
 
-const sendMail = async (to, subject, text, html = null) => {
-  const mailOptions = {
-    from: 'Eventify Team',
-    to,
-    subject,
-    text,
-    ...(html && { html }), // include HTML if provided
-  };
-
-  return transporter.sendMail(mailOptions);
+    return data;
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    throw error;
+  }
 };
 
-export default { sendMail };
+export default sendMail;
