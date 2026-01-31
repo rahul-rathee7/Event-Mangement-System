@@ -60,7 +60,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
       setIsSearchingLocation(true);
       try {
         const res = await axios.get<LocationResult[]>(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/users/search-location`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://event-mangement-system-r4iu.onrender.com'}/api/users/search-location`,
           {
             params: { query: placeName },
             withCredentials: true,
@@ -125,7 +125,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
     };
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://event-mangement-system-r4iu.onrender.com';
       const response = await axios.post(
         `${apiUrl}/api/users/update-data`, 
         updatedData,

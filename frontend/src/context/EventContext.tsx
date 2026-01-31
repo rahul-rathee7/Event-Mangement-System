@@ -49,7 +49,7 @@ export const EventContextProvider = ({ children }: { children: React.ReactNode }
 
     const sendData = async (payload: Partial<Event> = {}) => {
         try {
-            const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+            const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://event-mangement-system-r4iu.onrender.com';
             const body: Partial<Event> = {
                 ...payload,
                 title: (payload).title || (payload).name || '',
@@ -113,8 +113,8 @@ if (cover) {
             setIsLoading(true);
             try {
                 const [featuredEventsRes, allEventsRes] = await Promise.all([
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/events/featured-events`, { withCredentials: true }),
-                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/events/get-all`, { withCredentials: true })
+                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://event-mangement-system-r4iu.onrender.com'}/api/events/featured-events`, { withCredentials: true }),
+                    axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://event-mangement-system-r4iu.onrender.com'}/api/events/get-all`, { withCredentials: true })
                 ]);
 
                 if (featuredEventsRes.data.success) {
