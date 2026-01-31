@@ -38,7 +38,7 @@ const Page = () => {
     setMessage(null);
     setLoading(true);
     try {
-      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/forget-password', { email });
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/sendmail/forget-password', { email });
       if (res.data?.success) {
         setStep('enterCode');
         setSentAt(Date.now());
@@ -58,7 +58,7 @@ const Page = () => {
     setMessage(null);
     setLoading(true);
     try {
-      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/verify-otp', { email, otp: code });
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/sendmail/verify-otp', { email, otp: code });
       if (res.data?.success) {
         setStep('verifyCode');
         setMessage({ type: 'success', text: 'Code verified. Set a new password.' });
@@ -80,7 +80,7 @@ const Page = () => {
     setMessage(null);
     setLoading(true);
     try {
-      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/reset-password', { email, password: newPassword });
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/sendmail/reset-password', { email, password: newPassword });
       if (res.data?.success) {
         setMessage({ type: 'success', text: 'Password reset successful. Redirecting to login...' });
         setTimeout(() => router.push('/userAuth/login'), 1200);

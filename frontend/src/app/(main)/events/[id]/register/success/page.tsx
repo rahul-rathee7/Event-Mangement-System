@@ -70,8 +70,8 @@ export default function RegistrationSuccessPage() {
   useEffect(() => {
     async function sendRegistrationConfirmation() {
       try {
-        const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/events/registered-users', {userId:user._id, eventId}, {withCredentials: true})
-        const res1 = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/users/registered-events', {userId:user._id, eventId}, {withCredentials: true})
+        const res = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/events/registered-users', {userId:user._id, eventId}, {withCredentials: true})
+        const res1 = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/users/registered-events', {userId:user._id, eventId}, {withCredentials: true})
         if(res.status && res1.status) {
           console.log(res.data.message);
           console.log(res.data.message);

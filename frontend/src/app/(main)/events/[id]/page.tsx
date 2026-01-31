@@ -140,7 +140,7 @@ const EventDetailsPage = () => {
     }, 200);
     async function fetchOrganizerInfo() {
     if (user && eventDetails) {
-      const res = await axios.post(`https://event-mangement-system-r4iu.onrender.comapi/users/getUserByName`, {
+      const res = await axios.post(`https://event-mangement-system-r4iu.onrender.com/api/users/getUserByName`, {
         id: eventDetails.organizerInfo
       }, { withCredentials: true });
       if(res.data.success){

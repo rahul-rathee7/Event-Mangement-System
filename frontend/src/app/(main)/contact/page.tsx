@@ -23,7 +23,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try{
-      const res = await axios.post("https://event-mangement-system-r4iu.onrender.comapi/users/store-message", {name: formData.name, email: formData.email, subject: formData.subject, message: formData.message}, {
+      const res = await axios.post("https://event-mangement-system-r4iu.onrender.com/api/users/store-message", {name: formData.name, email: formData.email, subject: formData.subject, message: formData.message}, {
       });
       if(res.data.success) {
         console.log("We'll get back to you as soon as possible");

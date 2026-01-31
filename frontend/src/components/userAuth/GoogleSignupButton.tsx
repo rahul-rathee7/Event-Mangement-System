@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function GoogleSignupButton() {
   return (
     <a 
-      href="https://event-mangement-system-r4iu.onrender.comapi/auth/google"
+      href="https://event-mangement-system-r4iu.onrender.com/api/auth/google"
       className="mt-3 w-full flex justify-center items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-red-600 transition"
     >
       <Image

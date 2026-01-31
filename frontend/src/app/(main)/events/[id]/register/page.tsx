@@ -77,7 +77,7 @@ export default function Page() {
     setLoadingEvent(true);
     (async () => {
       try {
-        const res = await axios.get(`https://event-mangement-system-r4iu.onrender.comapi/events/event/${eventId}`, {withCredentials: true})
+        const res = await axios.get(`https://event-mangement-system-r4iu.onrender.com/api/events/event/${eventId}`, {withCredentials: true})
         if (res.status !== 200) throw new Error('No server data')
           console.log(res.data.Event);
         const json = res.data.Event
