@@ -218,7 +218,7 @@ const HeroSection = () => {
           className="my-20"
         >
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold dark:text-white">Event Categories</h2>
+            <h2 className="text-3xl md:text-4xl font-bold dark:text-background">Event Categories</h2>
             <motion.button
               whileHover={{ x: 5 }}
               className="text-[#003161] dark:text-[#4f85cc] font-medium flex items-center"
@@ -252,7 +252,7 @@ const HeroSection = () => {
 
         <div className="my-20">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold dark:text-white">Featured Events</h2>
+            <h2 className="text-3xl md:text-4xl font-bold dark:text-background">Featured Events</h2>
             <motion.button
               whileHover={{ x: 5 }}
               onClick={() => router.push('/events')}

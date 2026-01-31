@@ -96,12 +96,12 @@ const EventDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [ organizerInfo, setOrganizerInfo ] = useState(null);
+  const [organizerInfo, setOrganizerInfo] = useState(null);
   
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 800);
+    }, 500);
     
     return () => clearTimeout(timer);
   }, []);
@@ -136,8 +136,8 @@ const EventDetailsPage = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      
-    }, 200);
+      setIsLoading(false);
+    }, 800);
     async function fetchOrganizerInfo() {
     if (user && eventDetails) {
       const res = await axios.post(`https://event-mangement-system-r4iu.onrender.com/api/users/getUserByName`, {
@@ -358,7 +358,7 @@ const EventDetailsPage = () => {
                       <p className="font-medium text-gray-900 dark:text-white">{organizerInfo?.fullname || 'Event Organizer'}</p>
                       <div className="flex items-center mt-1">
                         <Mail className="w-4 h-4 text-gray-400 mr-1" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{organizerInfo?.email}</span> 
+                        <span className="text-md text-white">{organizerInfo?.email}</span> 
                       </div>
                     </div>
                   </div>

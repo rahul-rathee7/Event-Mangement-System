@@ -49,17 +49,13 @@ const NavLink = ({ href, label, isActive }: NavLinkProps) => {
     >
       <button 
         onClick={() => router.push(href)}
-        className={`px-4 py-2 rounded-lg font-medium text-lg transition-colors ${
-          isActive 
-            ? 'text-[#003199] dark:text-white' 
-            : 'text-gray-600 dark:text-gray-300 hover:text-[#003199] dark:hover:text-white'
-        }`}
+        className='px-4 py-2 rounded-lg font-medium text-lg transition-colors'
       >
         {label}
         {isActive && (
           <motion.div 
             layoutId="activeIndicator"
-            className="absolute -bottom-1 left-0 right-0 mx-auto w-1/2 h-1 bg-[#003199] dark:bg-white rounded-full"
+            className="absolute -bottom-1 left-0 right-0 mx-auto w-1/2 h-1 bg-[#003199] dark:bg-background rounded-full"
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
           />
         )}
@@ -291,6 +287,9 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const textColor = isScrolled
+  ? 'text-gray-900 dark:text-white'
+  : 'text-[#003199] dark:text-white';
   
   // Handle scroll effect
   useEffect(() => {
@@ -337,7 +336,7 @@ const Navbar = () => {
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
           isScrolled 
-            ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-md' 
+            ? 'py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-md text-gray-900 dark:text-white' 
             : 'py-3 bg-transparent'
         }`}
       >
@@ -349,7 +348,7 @@ const Navbar = () => {
               className="flex items-center"
             >
               <Link href="/">
-                <h1 className='text-2xl sm:text-3xl font-bold text-[#003199] dark:text-white transition-colors'>
+                <h1 className={`text-2xl sm:text-3xl font-bold dark:text-background`}>
                   Eventify
                 </h1>
               </Link>
@@ -357,7 +356,7 @@ const Navbar = () => {
             
             {/* Desktop Navigation */}
             <nav className="hidden lg:block">
-              <ul className="flex items-center space-x-1">
+              <ul className="flex items-center space-x-4">
                 {navLinks.map((link) => (
                   <NavLink 
                     key={link.href}

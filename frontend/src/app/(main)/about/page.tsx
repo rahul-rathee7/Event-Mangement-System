@@ -45,7 +45,7 @@ const About = () => {
     <div className="min-h-screen flex flex-col">
       <main className="flex-1">
         <section className="bg-cover bg-end w-full h-[40vh] py-20">
-          <div className="container mx-auto px-4 text-center text-white">
+          <div className="container mx-auto px-4 text-center text-primary-foreground">
             <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
               About Eventify
             </h1>

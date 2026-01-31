@@ -119,6 +119,8 @@ const Carousel_001 = ({
               className="h-full w-full object-cover"
               src={image.src}
               alt={image.alt}
+              width={"500"}
+              height={"500"}
             />
           </SwiperSlide>
         ))}
