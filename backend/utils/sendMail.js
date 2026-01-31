@@ -8,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const sendMail = async (to, subject, text, html) => {
   try {
     const data = await resend.emails.send({
-      from: 'Eventify <onboarding@resend.dev>', // works in dev
+      from: 'Eventify <onboarding@resend.dev>',
       to,
       subject,
       text,
