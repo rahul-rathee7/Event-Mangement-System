@@ -20,7 +20,7 @@ const app = express();
 //     next();
 // });
 
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:8081' ], credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:8081', 'https://event-mangement-system-one.vercel.app'], credentials: true }));
 app.use(express.json());
 app.use(cookieparser());
 
