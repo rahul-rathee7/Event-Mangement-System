@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/UserContext';
 import axios from 'axios';
-import { Mail, Key, ShieldCheck, Eye, EyeOff, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { Mail, ShieldCheck, Eye, EyeOff, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 const Page = () => {
   const { user } = useAuth();
@@ -38,7 +38,7 @@ const Page = () => {
     setMessage(null);
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/sendmail/forget-password', { email });
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/forget-password', { email });
       if (res.data?.success) {
         setStep('enterCode');
         setSentAt(Date.now());
@@ -46,7 +46,7 @@ const Page = () => {
       } else {
         setMessage({ type: 'error', text: res.data?.message ?? 'Unable to send code.' });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error sending reset code:', err);
       setMessage({ type: 'error', text: 'Network error. Try again.' });
     } finally {
@@ -58,7 +58,7 @@ const Page = () => {
     setMessage(null);
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/sendmail/verify-otp', { email, otp: code });
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/verify-otp', { email, otp: code });
       if (res.data?.success) {
         setStep('verifyCode');
         setMessage({ type: 'success', text: 'Code verified. Set a new password.' });
@@ -67,7 +67,7 @@ const Page = () => {
         setMessage({ type: 'error', text: res.data?.message ?? 'Invalid code.' });
         return false;
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error verifying reset code:', err);
       setMessage({ type: 'error', text: 'Verification failed. Try again.' });
       return false;
@@ -80,14 +80,14 @@ const Page = () => {
     setMessage(null);
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/sendmail/reset-password', { email, password: newPassword });
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/reset-password', { email, password: newPassword });
       if (res.data?.success) {
         setMessage({ type: 'success', text: 'Password reset successful. Redirecting to login...' });
         setTimeout(() => router.push('/userAuth/login'), 1200);
       } else {
         setMessage({ type: 'error', text: res.data?.message ?? 'Reset failed.' });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error resetting password:', err);
       setMessage({ type: 'error', text: 'Network error. Try again.' });
     } finally {

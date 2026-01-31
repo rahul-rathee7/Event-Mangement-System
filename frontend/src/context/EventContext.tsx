@@ -8,11 +8,23 @@ type Event = {
   title?: string
   name?: string
   description?: string
+  shortDescription?: string
   location?: string
   date?: string
   time?: string
   image?: string
-  [key: string]: any
+  coverImage?: File | { file: File } | string
+  isOnline?: boolean
+  category?: string
+  capacity?: number
+  ticketPrice?: number
+  isFree?: boolean
+  isPublic?: boolean
+  tags?: string[]
+  ticketOptions?: { type: string; price: number; quantity: number }[]
+  organizerInfo?: string
+  startDate?: string
+  endDate?: string
 }
 
 interface EventContextType {
@@ -38,9 +50,9 @@ export const EventContextProvider = ({ children }: { children: React.ReactNode }
     const sendData = async (payload: Partial<Event> = {}) => {
         try {
             const apiBase = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
-            const body: any = {
+            const body: Partial<Event> = {
                 ...payload,
-                title: (payload as any).title || (payload as any).name || '',
+                title: (payload).title || (payload).name || '',
             };
             delete body.coverImage;
             if (body.tags && !Array.isArray(body.tags)) {
@@ -55,7 +67,7 @@ export const EventContextProvider = ({ children }: { children: React.ReactNode }
             // Append all fields to FormData
             fd.append('title', body.title);
             fd.append('description', body.description || '');
-            fd.append('shortDescription', body.shortDescription || '');
+            fd.append('shortDescription', body?.shortDescription || '');
             fd.append('startDate', body.startDate ? new Date(body.startDate).toISOString() : '');
             if (body.endDate) fd.append('endDate', new Date(body.endDate).toISOString());
             fd.append('location', body.location || '');
@@ -68,12 +80,12 @@ export const EventContextProvider = ({ children }: { children: React.ReactNode }
             if (body.tags) fd.append('tags', JSON.stringify(body.tags));
             if (body.ticketOptions) fd.append('ticketOptions', JSON.stringify(body.ticketOptions));
             fd.append('organizerInfo', body.organizerInfo || '');
-const cover = (payload as any).coverImage;
+const cover = (payload).coverImage;
 if (cover) {
     if (cover instanceof File) {
         fd.append('image', cover);
-    } else if (cover && (cover as any).file instanceof File) {
-        fd.append('image', (cover as any).file);
+    } else if (cover && (cover as { file: File }).file instanceof File) {
+        fd.append('image', (cover as { file: File }).file);
     } else if (typeof cover === 'string') {
         fd.append('imageUrl', cover);
     }

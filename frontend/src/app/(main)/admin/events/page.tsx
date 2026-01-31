@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useEventContext } from '@/context/EventContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Search, Calendar, MapPin, Filter, ChevronDown, X } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import { useAuth } from '@/context/UserContext';
 
 // Event Card Component
@@ -214,7 +214,7 @@ const EventsPage = () => {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {filteredEvents.map((event, index) => (
-                <EventCard key={event.id || index} event={event} index={index} />
+                <EventCard key={event._id || index} event={event} index={index} />
             ))}
           </motion.div>
         ) : (

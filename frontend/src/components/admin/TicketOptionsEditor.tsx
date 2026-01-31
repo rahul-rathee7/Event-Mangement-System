@@ -11,7 +11,7 @@ const TicketOptionsEditor = ({ isFree, onChange, initialOptions, ticketprice }) 
       setOptions(newOptions);
       onChange(newOptions);
     }
-  }, [isFree]);
+  }, [isFree, options, onChange]);
 
   const handleOptionChange = (index, field, value) => {
     const newOptions = options.map((option, i) => {

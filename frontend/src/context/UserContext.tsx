@@ -68,18 +68,18 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [otp, setOtp] = useState(0)
   const [user, setUser] = useState<User | null>(null)
   const [isSignedup, setIsSignedup] = useState(false)
-  const [error, setError] = useState('');
   const [datafetched, setDatafetched] = useState(false);
+  const [otp, setOtp] = useState<number>(0);
+  const [error] = useState<string>("");
   const router = useRouter()
 
   const signInClient = {
     isLoaded: true,
     create: async ({ emailAddress, password }: SignInParams): Promise<SignInResult> => {
       try {
-        const response = await axios.post(`http://localhost:5000/api/auth/login`, {
+        const response = await axios.post(`https://event-mangement-system-r4iu.onrender.comapi/auth/login`, {
           email: emailAddress,
           password: password,
         }, { withCredentials: true })
@@ -90,9 +90,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.log(formattedUser);
           return { status: !formattedUser.twoFA ? "complete" : "needs_email_verification" };
         }
-        else {
-          setError(response.data.message || "Login failed")
-        }
 
         if (response.data.needsVerification) {
           return { status: "needs_email_verification" }
@@ -100,7 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         throw new Error(response.data.message || "An unexpected error occurred.")
 
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (axios.isAxiosError(error) && error.response) {
           if (error.response.status === 401 || error.response.status === 400) {
             throw new Error(error.response.data.message || "Invalid email or password.")
@@ -112,10 +109,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const signUpClient = {
+    isLoaded: false as const,
     create: async ({ emailAddress, password, fullname, role }: SignUpParams): Promise<SignUpResult> => {
       setIsSignedup(true);
       try {
-        const response = await axios.post(`http://localhost:5000/api/auth/register`, {
+        const response = await axios.post(`https://event-mangement-system-r4iu.onrender.comapi/auth/register`, {
           email: emailAddress,
           password: password,
           fullname: fullname,
@@ -130,9 +128,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }
           router.push("/");
           return { status: "complete" };
-        }
-        else {
-          setError(response.data.message || "Login failed")
         }
 
         if (response.data.needsVerification) {
@@ -152,11 +147,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     finally {
       setIsSignedup(false);
     }
+    },
+    update: async () => {
+      // Dummy implementation, replace with actual logic if needed
+      return Promise.resolve();
+    },
+    prepareEmailAddressVerification: async () => {
+      // Dummy implementation, replace with actual logic if needed
+      return Promise.resolve();
     }
   }
 
   const SignOutButton = async () => {
-    await axios.get("http://localhost:5000/api/auth/logout", {withCredentials: true});
+    await axios.get("https://event-mangement-system-r4iu.onrender.comapi/auth/logout", {withCredentials: true});
     setUser(null)
     delete axios.defaults.headers.common['Authorization']
     router.push("/");
@@ -164,7 +167,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const EditUserDetails = async ({fullname, description, location, phone}) => {
     try{
-    const res = await axios.post(`http://localhost:5000/api/users`, { email: user?.email, fullname: fullname, description: description, location: location, phone: phone }, { withCredentials: true });
+    const res = await axios.post(`https://event-mangement-system-r4iu.onrender.comapi/users`, { email: user?.email, fullname: fullname, description: description, location: location, phone: phone }, { withCredentials: true });
       if (res.data.success) {
         setUser((prev => prev ? {...prev, fullname: res.data.fullname, description: res.data.description, location: res.data.location, phone: res.data.phone} : prev));
       }
@@ -180,14 +183,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 useEffect(() => {
   async function fetchUserFromToken() {
     try{
-      const res = await axios.get('http://localhost:5000/api/auth/get-cookie', { withCredentials: true });
+      const res = await axios.get('https://event-mangement-system-r4iu.onrender.comapi/auth/get-cookie', { withCredentials: true });
       if(res.data.success) {
         setUser(res.data.user);
         setDatafetched(true);
       }
     }
-    catch(err: any) {
-      if(err.response) {
+    catch(err: unknown) {
+      if (axios.isAxiosError(err) && err.response) {
         console.log(err.response.data.message);
         setDatafetched(true);
       }
@@ -200,16 +203,15 @@ useEffect(() => {
   fetchUserFromToken()
 }, [])
 
-const setProfileImage = async ( fileInputRef: React.RefObject<HTMLInputElement>) => {
-  const file = fileInputRef.current?.files?.[0];
-  if(!file) return;
-  setUser((prev) => prev ? {...prev, image: file.name} : prev);
+const setProfileImage = async (file: File) => {
+  if (!file) return;
+  setUser((prev) => prev ? { ...prev, image: file.name } : prev);
 }
 
 const enableTwoFA = async () => {
   setUser((prev) => prev ? {...prev, twoFA: !prev.twoFA} : prev);
   try{
-    const res = await axios.post('http://localhost:5000/api/users/enable-two-factor', {email: user?.email, inp: !user?.twoFA}, { withCredentials: true });
+    const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/users/enable-two-factor', {email: user?.email, inp: !user?.twoFA}, { withCredentials: true });
     if(res.data.success) {
       setUser((prev) => prev ? {...prev, twoFA: res.data.two_factor} : prev);
       toast.success(`Two-Factor Authentication ${!user?.twoFA ? 'Enabled' : 'Disabled'}`);
@@ -237,6 +239,9 @@ return (
     setProfileImage,
     EditUserDetails,
     datafetched,
+    otp,
+    setOtp,
+    error,
     enableTwoFA
   }}>
     {children}

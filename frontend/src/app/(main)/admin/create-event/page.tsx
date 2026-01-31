@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useEffect, Suspense, lazy, use } from 'react'
+import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm, Controller } from 'react-hook-form'
 import Image from 'next/image'
@@ -253,7 +253,6 @@ const CreateEventPage = () => {
     handleSubmit, 
     watch, 
     setValue,
-    trigger,
     reset,
     formState: { errors, isValid }
   } = useForm({
@@ -281,15 +280,8 @@ const CreateEventPage = () => {
   const isOnline = watch('isOnline')
   
   const steps = ['Basic Info', 'Details', 'Tickets & Capacity', 'Preview']
-  const stepFields = [
-    ['name', 'shortDescription', 'description'],
-    ['startDate', 'endDate', 'location', 'category'],
-    ['ticketPrice', 'capacity'],
-    []
-  ];
   const nextStep = useCallback(async () => {
-    const fieldsToValidate = stepFields[currentStep];
-    const isValid = await trigger(fieldsToValidate);
+    // const isValid = await trigger(fieldsToValidate);
     if (isValid && currentStep < steps.length - 1) {
       setCurrentStep(prev => prev + 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -297,7 +289,7 @@ const CreateEventPage = () => {
       // 4. If validation fails, show an error toast.
       toast.error('Please fix the errors before proceeding.');
     }
-  }, [currentStep, steps.length, trigger])
+  }, [currentStep, steps.length, isValid])
   
   const prevStep = useCallback(() => {
     if (currentStep > 0) {
@@ -337,7 +329,7 @@ const CreateEventPage = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [coverImage, reset])
+  }, [coverImage, reset, sendData, user?._id])
   
   useEffect(() => {
     return () => {
@@ -446,7 +438,7 @@ const CreateEventPage = () => {
                   />
                 </FormField>
                 
-                <FormField label="Cover Image">
+                <FormField label="Cover Image" error={undefined}>
                   <ImageDropzone 
                     onChange={setCoverImage} 
                     value={coverImage}
@@ -513,7 +505,7 @@ const CreateEventPage = () => {
                   />
                 </FormField>
                 
-                <FormField label="Event Type">
+                <FormField label="Event Type" error={errors.isOnline?.message}>
                   <div className="flex items-center space-x-4">
                     <label className="inline-flex items-center">
                       <input
@@ -565,7 +557,7 @@ const CreateEventPage = () => {
                   </Suspense>
                 </FormField>
                 
-                <FormField label="Tags">
+                <FormField label="Tags" error={errors.tags?.message}>
                   <Controller
                     control={control}
                     name="tags"
@@ -594,7 +586,7 @@ const CreateEventPage = () => {
                   Tickets & Capacity
                 </h2>
                 
-                <FormField label="Is this a free event?">
+                <FormField label="Is this a free event?" error={errors.isFree?.message}>
                   <div className="flex items-center h-5">
                     <input
                       id="isFree"
@@ -642,7 +634,7 @@ const CreateEventPage = () => {
                   </div>
                 </FormField>
                 
-                <FormField label="Ticket Options">
+                <FormField label="Ticket Options" error={errors.ticketOptions?.message}>
                   <Suspense fallback={<div className="h-32 bg-gray-100 dark:bg-gray-700 rounded-md animate-pulse"></div>}>
                     <TicketOptionsEditor 
                       isFree={isFree}
@@ -653,7 +645,7 @@ const CreateEventPage = () => {
                   </Suspense>
                 </FormField>
                 
-                <FormField label="Event Visibility">
+                <FormField label="Event Visibility" error={errors.isPublic?.message}>
                   <div className="flex items-center h-5">
                     <input
                       id="isPublic"

@@ -24,7 +24,6 @@ app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:8081'], crede
 app.use(express.json());
 app.use(cookieparser());
 
-// Express session middleware
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your_secret_key',
     resave: false,
@@ -35,6 +34,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get("/", (req, res) => {
+    res.send("API is running...");
+});
 app.use("/api/events", events);
 app.use("/api/auth", Auth);
 app.use("/api/sendmail", sendmail);

@@ -6,7 +6,12 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { ArrowLeft, BarChart2, Zap, Clock } from 'lucide-react'
 
-const HeavyChart = dynamic(() => import('@/components/admin/DetailedChart'), {
+type HeavyChartProps = {
+  data: number[];
+  height: number;
+};
+
+const HeavyChart = dynamic<HeavyChartProps>(() => import('@/components/admin/DetailedChart'), {
   ssr: false,
   loading: () => (
     <div className="h-40 rounded-xl bg-white dark:bg-gray-800 animate-pulse" aria-hidden />
@@ -29,7 +34,7 @@ const Sparkline = ({ data = [], stroke = '#7C3AED' }: { data?: number[], stroke?
   )
 }
 
-const Stat = React.memo(({ title, value, delta, icon, spark }: any) => (
+const Stat = React.memo(({ title, value, delta, icon, spark }: { title: string, value: number | string, delta: number, icon: React.ReactElement, spark: number[] }) => (
   <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 flex items-center justify-between shadow-sm">
     <div>
       <div className="flex items-center gap-3">

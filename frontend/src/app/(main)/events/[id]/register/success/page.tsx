@@ -1,10 +1,11 @@
 'use client'
 
-import React, { useMemo, useCallback, useState, useEffect } from 'react'
+import React, { useMemo, useCallback, useEffect } from 'react'
 import { useRouter, useSearchParams, useParams } from 'next/navigation'
-import { CheckCircle2, Share2, Download, Calendar, ExternalLink, Link as LinkIcon } from 'lucide-react'
+import { CheckCircle2, Download, ExternalLink, Link as LinkIcon } from 'lucide-react'
 import axios from 'axios'
 import { useAuth } from '@/context/UserContext'
+import Image from 'next/image'
 
 export default function RegistrationSuccessPage() {
   const router = useRouter()
@@ -19,12 +20,12 @@ export default function RegistrationSuccessPage() {
     order: 'DEMO-0001'
   }
 
-  const eventId = params?.id ?? demoFallback.id
+  const eventIdRaw = params?.id ?? demoFallback.id
+  const eventId = Array.isArray(eventIdRaw) ? eventIdRaw[0] : eventIdRaw
   const eventName = search?.get('eventName') ?? demoFallback.name
   const ticketType = search?.get('ticket') ?? demoFallback.ticket
-  const orderId = search?.get('order') ?? demoFallback.order
-
-  const [copied, setCopied] = useState(false)
+  const orderIdRaw = search?.get('order') ?? demoFallback.order
+  const orderId = Array.isArray(orderIdRaw) ? orderIdRaw[0] : orderIdRaw
 
   const ticketUrl = useMemo(() => {
     const origin = typeof window !== 'undefined' ? window.location.origin : ''
@@ -62,15 +63,15 @@ export default function RegistrationSuccessPage() {
   win.document.close()
 
   win.onload = () => win.print()
-}, [eventName, ticketType, orderId, qrUrl, ticketUrl])
+}, [eventName, ticketType, orderId, qrUrl])
 
   const openEvent = useCallback(() => router.push(`/events/${eventId}`), [router, eventId])
 
   useEffect(() => {
     async function sendRegistrationConfirmation() {
       try {
-        const res = await axios.post('http://localhost:5000/api/events/registered-users', {userId:user._id, eventId}, {withCredentials: true})
-        const res1 = await axios.post('http://localhost:5000/api/users/registered-events', {userId:user._id, eventId}, {withCredentials: true})
+        const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/events/registered-users', {userId:user._id, eventId}, {withCredentials: true})
+        const res1 = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/users/registered-events', {userId:user._id, eventId}, {withCredentials: true})
         if(res.status && res1.status) {
           console.log(res.data.message);
           console.log(res.data.message);
@@ -83,7 +84,7 @@ export default function RegistrationSuccessPage() {
       }
     }
     sendRegistrationConfirmation()
-  }, [params])
+  }, [params, user, eventId])
 
   return (
     <main className="max-w-3xl mx-auto p-6">
@@ -108,7 +109,7 @@ export default function RegistrationSuccessPage() {
               </div>
             </div>
             <div className="rounded-md bg-gray-50 dark:bg-gray-900/40 p-3 flex items-center gap-3">
-              <img src={qrUrl} alt="Ticket QR code" width="88" height="88" className="rounded bg-white" />
+              <Image src={qrUrl} alt="Ticket QR code" width={88} height={88} className="rounded bg-white" />
             </div>
           </div>
 
@@ -140,8 +141,5 @@ export default function RegistrationSuccessPage() {
 
 /* helpers */
 function escapeHtml(str: unknown) {
-  return String(str ?? '').replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s as keyof any]))
-}
-function slugify(s: unknown) {
-  return String(s ?? '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '')
+  return String(str ?? '').replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s] || s))
 }

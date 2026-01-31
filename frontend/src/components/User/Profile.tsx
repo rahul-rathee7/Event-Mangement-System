@@ -29,7 +29,16 @@ const StatCard: React.FC<StatCardProps> = ({ value, label, icon }) => (
   </motion.div>
 );
 
-const EventCard: React.FC<{ event: any }> = ({ event }) => (
+type UserEvent = {
+  _id?: string | number;
+  title: string;
+  description?: string;
+  image?: string;
+  date?: string;
+};
+
+
+const EventCard: React.FC<{ event: UserEvent }> = ({ event }) => (
   <motion.div
     whileHover={{ y: -8, scale: 1.02 }}
     className="p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full"
@@ -64,6 +73,13 @@ const EventCard: React.FC<{ event: any }> = ({ event }) => (
   </motion.div>
 );
 
+export interface EditProfileProps {
+  seteditProfile: React.Dispatch<React.SetStateAction<boolean>>;
+  description?: string;
+  location?: string;
+  darkMode?: boolean;
+}
+
 const Profile: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
@@ -71,8 +87,17 @@ const Profile: React.FC = () => {
   const [editProfile, setEditProfile] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   
-  // Memoize event list to prevent unnecessary re-renders
-  const recentEvents = useMemo(() => events.slice(0, 4), [events]);
+  const recentEvents: UserEvent[] = useMemo(
+    () =>
+      events.slice(0, 4).map((event) => ({
+        id: event._id,
+        title: event.title || 'Untitled Event',
+        description: event.description,     
+        image: event.image,
+        date: event.date,
+      })),
+    [events]
+  );
 
   useEffect(() => {
     // Check for saved theme preference or system preference
@@ -186,7 +211,6 @@ const Profile: React.FC = () => {
                   
                   <div className="flex items-center text-gray-600 dark:text-gray-300 transition-colors duration-300">
                     <Calendar className="w-5 h-5 mr-1 text-blue-500 dark:text-blue-400" />
-                    <span>Joined {user?.joinDate || 'Recently'}</span>
                   </div>
                 </div>
               </div>
@@ -216,7 +240,7 @@ const Profile: React.FC = () => {
             {recentEvents.length > 0 ? (
               recentEvents.map((event, index) => (
                 <motion.div
-                  key={event.id || index}
+                  key={event._id || index}
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.1 * index }}

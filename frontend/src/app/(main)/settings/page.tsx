@@ -3,10 +3,7 @@
 
 import React, { useState, Suspense, lazy, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
-
-const LoadingTiny = () => <div className="w-5 h-5 rounded bg-gray-200 dark:bg-gray-700 animate-pulse" />
 
 const AccountSettings = lazy(() => import('@/components/User/settings/AccountSettings'))
 const NotificationsSettings = lazy(() => import('@/components/User/settings/NotificationsSettings'))

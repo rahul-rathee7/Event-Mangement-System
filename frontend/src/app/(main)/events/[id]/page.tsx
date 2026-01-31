@@ -6,9 +6,34 @@ import Image from 'next/image'
 import { useAuth } from '@/context/UserContext'
 import { useEventContext } from '@/context/EventContext'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, MapPin, Users, Mail, Share2, Heart, Ticket, ArrowRight, ChevronDown } from 'lucide-react'
+import { Calendar, Clock, MapPin, Mail, Share2, Heart, Ticket, ArrowRight, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
+
+// If you have an Event type or interface, add the featured property:
+interface Event {   
+  _id?: string
+  title?: string
+  name?: string
+  description?: string
+  shortDescription?: string
+  location?: string
+  date?: string
+  time?: string
+  image?: string
+  coverImage?: File | { file: File } | string
+  isOnline?: boolean
+  category?: string
+  capacity?: number
+  ticketPrice?: number
+  isFree?: boolean
+  isPublic?: boolean
+  tags?: string[]
+  ticketOptions?: { type: string; price: number; quantity: number }[]
+  organizerInfo?: string
+  startDate?: string
+  endDate?: string
+}
 
 // Loading skeleton
 const EventSkeleton = () => (
@@ -39,12 +64,12 @@ const EventSkeleton = () => (
   </div>
 );
 
-const RelatedEventCard = ({ event }) => (
+const RelatedEventCard = ({ event }: { event: Event }) => (
   <motion.div 
     whileHover={{ y: -5 }}
     className="group cursor-pointer"
   >
-    <Link href={`/events/${event.id}`} className="block">
+    <Link href={`/events/${event._id}`} className="block">
       <div className="relative w-full h-32 md:h-36 rounded-xl overflow-hidden mb-2">
         <Image 
           src={event.image} 
@@ -66,7 +91,7 @@ const RelatedEventCard = ({ event }) => (
 const EventDetailsPage = () => {
   const { id } = useParams();
   const { user } = useAuth();
-  const { events } = useEventContext();
+  const { events, FeaturedEvents } = useEventContext();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -115,7 +140,7 @@ const EventDetailsPage = () => {
     }, 200);
     async function fetchOrganizerInfo() {
     if (user && eventDetails) {
-      const res = await axios.post(`http://localhost:5000/api/users/getUserByName`, {
+      const res = await axios.post(`https://event-mangement-system-r4iu.onrender.comapi/users/getUserByName`, {
         id: eventDetails.organizerInfo
       }, { withCredentials: true });
       if(res.data.success){
@@ -132,7 +157,7 @@ const EventDetailsPage = () => {
       <div className="min-h-[70vh] flex flex-col items-center justify-center px-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Event Not Found</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">The event you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">The event you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <button 
             onClick={() => router.push('/events')}
             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
@@ -175,8 +200,8 @@ const EventDetailsPage = () => {
                     <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full">
                       {eventDetails?.category || 'Event'}
                     </span>
-                    {eventDetails?.featured && (
-                      <span className="px-3 py-1 bg-amber-500 text-white text-xs font-semibold rounded-full">
+                    {FeaturedEvents && (
+                      <span className="px-3 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full">
                         Featured
                       </span>
                     )}
@@ -288,7 +313,7 @@ const EventDetailsPage = () => {
                         <div className="flex items-center mt-1">
                           <Ticket className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
                           <span className="text-gray-700 dark:text-gray-300">
-                            {eventDetails?.price === 0 ? 'Free Entry' : `$${eventDetails?.price || '25'}`}
+                            {eventDetails?.ticketPrice === 0 ? 'Free Entry' : `$${eventDetails?.ticketPrice || '25'}`}
                           </span>
                         </div>
                         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -337,12 +362,6 @@ const EventDetailsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                    <p className="flex items-center mb-1">
-                      <Users className="w-4 h-4 mr-2" />
-                      <span>{eventDetails?.attendees || 42} people attending</span>
-                    </p>
-                  </div>
                 </motion.div>
                 
                 {/* Related Events */}
@@ -354,7 +373,7 @@ const EventDetailsPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Similar Events</h3>
                   <div className="space-y-4">
                     {relatedEvents.length > 0 ? (
-                      relatedEvents.map((event, index) => (
+                      relatedEvents.map((event) => (
                         <RelatedEventCard key={event._id} event={event} />
                       ))
                     ) : (

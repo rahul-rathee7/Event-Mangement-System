@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Loader2, CreditCard, CheckCircle2 } from 'lucide-react'
 import Image from 'next/image'
@@ -9,8 +9,8 @@ type Props = {
   eventId: string
   amount: number
   currency?: string
-  onSuccess?: (receipt?: any) => void
-  onError?: (err: any) => void
+  onSuccess?: (receipt?) => void
+  onError?: (err) => void
 }
 
 export default function PaymentWidget({ eventId, amount, currency = 'USD', onSuccess, onError }: Props) {
@@ -33,7 +33,7 @@ export default function PaymentWidget({ eventId, amount, currency = 'USD', onSuc
       }
       setDone(true)
       onSuccess?.(receipt)
-    } catch (err: any) {
+    } catch (err) {
       setError(err?.message ?? 'Payment failed')
       onError?.(err)
     } finally {

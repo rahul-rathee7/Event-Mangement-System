@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback, Suspense, lazy } from 'react'
+import React, { useState, useEffect, useMemo, Suspense, lazy } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
@@ -33,7 +33,26 @@ export default function Page() {
 
   const [submitting, setSubmitting] = useState(false)
   const [showPaymentWidget, setShowPaymentWidget] = useState(false)
-  const [eventData, setEventData] = useState<any | null>(null)
+  interface TicketOption {
+    _id: string
+    name: string
+    label?: string
+    price: number
+  }
+
+  interface EventData {
+    id: string
+    title: string
+    date: string
+    location: string
+    cover?: string
+    image?: string
+    ticketPrice: number
+    ticketOptions: TicketOption[]
+    description: string
+  }
+
+  const [eventData, setEventData] = useState<EventData | null>(null)
   const [loadingEvent, setLoadingEvent] = useState(false)
 
   const {
@@ -58,7 +77,7 @@ export default function Page() {
     setLoadingEvent(true);
     (async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/events/event/${eventId}`, {withCredentials: true})
+        const res = await axios.get(`https://event-mangement-system-r4iu.onrender.comapi/events/event/${eventId}`, {withCredentials: true})
         if (res.status !== 200) throw new Error('No server data')
           console.log(res.data.Event);
         const json = res.data.Event
@@ -74,7 +93,10 @@ export default function Page() {
           location: 'Grand Hall, Downtown',
           cover: '',
           ticketPrice: 25.0,
-          ticketOptions: [{ name: 'general', label: 'General', price: 25 }, { name: 'vip', label: 'VIP', price: 75 }],
+          ticketOptions: [
+            { _id: 'general', name: 'general', label: 'General', price: 25 },
+            { _id: 'vip', name: 'vip', label: 'VIP', price: 75 }
+          ],
           description: 'An immersive event about modern web technologies — workshops, talks, and networking.'
         })
       } finally {
@@ -94,7 +116,7 @@ export default function Page() {
   const summary = useMemo(() => {
     if (!eventData) return null
     const price = eventData?.ticketPrice ?? 0
-    const selected = eventData?.ticketOptions?.find((t: any) => t._id === ticketType) ?? { price }
+    const selected = eventData?.ticketOptions?.find((t) => t._id === ticketType) ?? { price }
     return {
       title: eventData?.title,
       date: new Date(eventData?.date).toLocaleString(),
@@ -162,7 +184,7 @@ export default function Page() {
                   </div>
 
                   <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    {(eventData?.ticketOptions ?? []).map((t: any) => (
+                    {(eventData?.ticketOptions ?? []).map((t) => (
                       <div key={t._id} className="p-3 rounded-lg border border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20">
                         <div className="flex items-center justify-between">
                           <div>
@@ -204,7 +226,7 @@ export default function Page() {
                     render={({ field }) => (
                       <select {...field} className="block w-full rounded-md border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-white sm:text-sm">
                         <option value="">Select ticket</option>
-                        {(eventData?.ticketOptions ?? []).map((t: any) => <option key={t._id} value={t._id}>{t.name} — ${t.price.toFixed(2)}</option>)}
+                        {(eventData?.ticketOptions ?? []).map((t) => <option key={t._id} value={t._id}>{t.name} — ${t.price.toFixed(2)}</option>)}
                       </select>
                     )}
                   />

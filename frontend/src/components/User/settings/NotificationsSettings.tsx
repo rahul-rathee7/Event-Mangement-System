@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Bell, Check, X } from 'lucide-react'
+import { Bell, X } from 'lucide-react'
 
 type Props = {
   onClose?: () => void

@@ -11,7 +11,7 @@ const RESEND_COOLDOWN_MS = 45_000
 
 export default function Page() {
   const router = useRouter()
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const userEmail = user?.email ?? ''
   const twoFAEnabled = Boolean(user?.twoFA)
 
@@ -80,7 +80,7 @@ export default function Page() {
     setLoading(true)
 
     try {
-      const res = await axios.post('http://localhost:5000/api/sendmail/forget-password', { email: userEmail, purpose: '2fa' })
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/forget-password', { email: userEmail, purpose: '2fa' })
       if (res.data?.success) {
         const now = Date.now()
         sessionStorage.setItem(sentKey, String(now))
@@ -165,7 +165,7 @@ export default function Page() {
     setMessage(null)
     setLoading(true)
     try {
-      const res = await axios.post('http://localhost:5000/api/sendmail/verify-otp', { email: userEmail, otp: code, purpose: '2fa' })
+      const res = await axios.post('https://event-mangement-system-r4iu.onrender.comapi/sendmail/verify-otp', { email: userEmail, otp: code, purpose: '2fa' })
       if (res.data?.success) {
         setMessage({ type: 'success', text: 'Verified — signing you in.' })
         setTimeout(() => router.replace('/'), 700)
@@ -198,12 +198,12 @@ export default function Page() {
             <ul className="text-sm space-y-2 opacity-95">
               <li>• The code is valid for a short period.</li>
               <li>• You can paste the full code into the first box.</li>
-              <li>• If you didn't receive it, try resend after cooldown.</li>
+              <li>• If you didn&apos;t receive it, try resend after cooldown.</li>
             </ul>
           </div>
 
           <div className="p-8">
-            <button onClick={() => { logout?.(); router.replace('/userAuth/login') }} className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
+            <button onClick={() => {router.replace('/userAuth/login') }} className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
               <ArrowLeft size={16} /> Logout
             </button>
 
@@ -225,7 +225,7 @@ export default function Page() {
                 {Array.from({ length: OTP_LENGTH }).map((_, i) => (
                   <input
                     key={i}
-                    ref={el => inputsRef.current[i] = el}
+                    ref={el => { inputsRef.current[i] = el }}
                     inputMode="numeric"
                     pattern="\d*"
                     maxLength={1}

@@ -78,7 +78,7 @@ export default function DeepDetailedChart({ data = [], range = '30d', height = 2
       const y = padded.top + innerH - ((d - min) / (max - min || 1)) * innerH
       return { x, y, v: d, i }
     })
-  }, [data, innerW, innerH, max, min])
+  }, [data, innerW, innerH, max, min, padded.left, padded.top])
 
   const { path, area } = useMemo(() => buildPath(points, smooth), [points, smooth])
 
@@ -159,7 +159,7 @@ export default function DeepDetailedChart({ data = [], range = '30d', height = 2
       arr.push({ y, val })
     }
     return arr
-  }, [min, max, innerH])
+  }, [min, max, innerH, padded.top])
 
   return (
     <div ref={containerRef} className={`w-full ${className}`} style={{ minWidth: 240 }}>

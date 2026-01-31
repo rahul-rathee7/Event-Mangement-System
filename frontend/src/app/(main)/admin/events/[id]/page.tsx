@@ -5,24 +5,37 @@ import { useParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { useEventContext } from '@/context/EventContext'
 import { useAuth } from '@/context/UserContext'
-import { Edit3, Trash2, ExternalLink, Users, Download, Eye } from 'lucide-react'
+import { Users, Eye } from 'lucide-react'
 
-type EventType = any
-type UserType = any
+// If you have a shared Event type, extend it here or update the original type in your context file.
+type EventType = {
+  _id: string;
+  title?: string;
+  name?: string;
+  image?: string;
+  shortDescription?: string;
+  description?: string;
+  category?: string;
+  isPublic?: boolean;
+  ticketPrice?: number;
+  capacity?: number;
+  startDate?: string | number | Date;
+  date?: string | number | Date;
+  organizerInfo?: string;
+  register_user_id?: string[]; // <-- Make sure this property exists in all event types used
+};
 
 export default function AdminEventPage() {
   const { id } = useParams()
   const router = useRouter()
-  const { events, setEvents } = useEventContext()
+  const { events } = useEventContext()
   const { user } = useAuth()
 
   const [event, setEvent] = useState<EventType | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [registrants, setRegistrants] = useState<string[]>([])
-  const [processing, setProcessing] = useState(false)
 
-  // find event in context first (fast), fall back to fetch
   useEffect(() => {
     let mounted = true
     async function load() {
@@ -32,8 +45,24 @@ export default function AdminEventPage() {
         const fromCtx = Array.isArray(events) ? events.find(e => String(e._id) === String(id)) : null
         if (fromCtx) {
           if (!mounted) return
-          setEvent(fromCtx)
-          setRegistrants(Array.isArray(fromCtx.register_user_id) ? fromCtx.register_user_id.map(String) : [])
+          const ctxWithRegistrants = fromCtx as EventType
+          setEvent({
+            _id: String(ctxWithRegistrants._id),
+            title: ctxWithRegistrants.title,
+            name: ctxWithRegistrants.name,
+            image: ctxWithRegistrants.image,
+            shortDescription: ctxWithRegistrants.shortDescription,
+            description: ctxWithRegistrants.description,
+            category: ctxWithRegistrants.category,
+            isPublic: ctxWithRegistrants.isPublic,
+            ticketPrice: ctxWithRegistrants.ticketPrice,
+            capacity: ctxWithRegistrants.capacity,
+            startDate: ctxWithRegistrants.startDate,
+            date: ctxWithRegistrants.date,
+            organizerInfo: ctxWithRegistrants.organizerInfo,
+            register_user_id: ctxWithRegistrants.register_user_id,
+          })
+          setRegistrants(Array.isArray(ctxWithRegistrants.register_user_id) ? ctxWithRegistrants.register_user_id.map(String) : [])
           setLoading(false)
           return
         }
@@ -43,10 +72,10 @@ export default function AdminEventPage() {
         if (!mounted) return
         setEvent(json.Event || json.data || null)
         const ids = json.Event?.register_user_id || json.data?.register_user_id || []
-        setRegistrants(Array.isArray(ids) ? ids.map((x: any) => String(x)) : [])
-      } catch (err: any) {
+        setRegistrants(Array.isArray(ids) ? ids.map((x: string | number) => String(x)) : [])
+      } catch (err: unknown) {
         console.error(err)
-        if (mounted) setError(err.message || 'Unable to load event')
+        if (mounted) setError(err instanceof Error ? err.message : 'Unable to load event')
       } finally {
         if (mounted) setLoading(false)
       }

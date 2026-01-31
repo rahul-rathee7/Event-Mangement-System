@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
-import { toast } from "react-hot-toast";
 import axios from 'axios'
 
 const Contact = () => {
@@ -24,7 +23,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try{
-      const res = await axios.post("http://localhost:5000/api/users/store-message", {name: formData.name, email: formData.email, subject: formData.subject, message: formData.message}, {
+      const res = await axios.post("https://event-mangement-system-r4iu.onrender.comapi/users/store-message", {name: formData.name, email: formData.email, subject: formData.subject, message: formData.message}, {
       });
       if(res.data.success) {
         console.log("We'll get back to you as soon as possible");
@@ -51,7 +50,7 @@ const Contact = () => {
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Get In Touch</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+              Have questions? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
             </p>
           </div>
         </section>
@@ -114,7 +113,7 @@ const Contact = () => {
                   <CardHeader>
                     <CardTitle>Send us a Message</CardTitle>
                     <CardDescription>
-                      Fill out the form below and we'll get back to you within 24 hours
+                      Fill out the form below and we&apos;ll get back to you within 24 hours
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -192,8 +191,8 @@ const Contact = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    Simply browse our events, click on the one you're interested in, and click the "Register Now" button.
-                    You'll need to create an account or sign in to complete your registration.
+                    Simply browse our events, click on the one you&apos;re interested in, and click the &quot;Register Now&quot; button.
+                    You&apos;ll need to create an account or sign in to complete your registration.
                   </p>
                 </CardContent>
               </Card>
@@ -216,7 +215,7 @@ const Contact = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground">
-                    To create an event, you'll need an organizer account. Contact our support team at
+                    To create an event, you&apos;ll need an organizer account. Contact our support team at
                     support@Eventify.com to get started with event creation.
                   </p>
                 </CardContent>

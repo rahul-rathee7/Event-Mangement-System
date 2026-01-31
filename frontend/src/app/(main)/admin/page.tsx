@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useAuth } from '@/context/UserContext'
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
@@ -8,7 +8,6 @@ import { Calendar, Users, Clock, Activity, TrendingUp, AlertCircle, CheckCircle,
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEventContext } from '@/context/EventContext';
 
 // ...existing code...
 
@@ -19,7 +18,7 @@ const Analytics = dynamic(() => import('@/components/admin/AnalyticsComponent'),
   )
 })
 
-const StatCard = React.memo(({ title, value, icon, color, change, isLoading }) => (
+const StatCard = React.memo(({ title, value, icon, color, change, isLoading }: { title: string, value: number | string, icon: React.ReactElement, color: string, change: number, isLoading: boolean }) => (
   <motion.div
     initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
@@ -60,7 +59,17 @@ const StatCard = React.memo(({ title, value, icon, color, change, isLoading }) =
 ));
 StatCard.displayName = 'StatCard';
 
-const EventRow = React.memo(({ event, isLoading }) => (
+type EventRowProps = {
+  event: {
+    id?: number | string;
+    title?: string;
+    date?: string;
+    status?: string;
+  };
+  isLoading: boolean;
+};
+
+const EventRow = React.memo(({ event, isLoading }: EventRowProps) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -116,7 +125,7 @@ const EventRow = React.memo(({ event, isLoading }) => (
 ));
 EventRow.displayName = 'EventRow';
 
-const QuickActionButton = React.memo(({ icon, title, description, onClick, color }) => (
+const QuickActionButton = React.memo(({ icon, title, description, onClick, color }: { icon: React.ReactElement, title: string, description: string, onClick: () => void, color: string }) => (
   <motion.button
     whileHover={{ scale: 1.02, y: -2 }}
     whileTap={{ scale: 0.98 }}
@@ -137,8 +146,6 @@ QuickActionButton.displayName = 'QuickActionButton';
 
 const Page = () => {
   const { user } = useAuth();
-  const { events } = useEventContext();
-  const [FilteredEvents, setFilteredEvents] = useState([]);
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -151,17 +158,16 @@ const Page = () => {
   const [recentEvents, setRecentEvents] = useState([]);
 
   useEffect(() => {
-    setFilteredEvents(events.filter(event => event.organizerInfo === user?._id));
-  },[events, user?._id])
-
-  useEffect(() => {
     let mounted = true;
 
     // fetch minimal data, defer heavy stuff (analytics) to idle
     const fetchSummary = async () => {
       try {
         // Replace with real API call; lightweight response expected
-        const data = await new Promise(resolve => {
+        const data = await new Promise<{ 
+          stats: { totalEvents: number; totalUsers: number; pendingEvents: number }, 
+          recent: { id: number; title: string; date: string; status: string }[] 
+        }>(resolve => {
           setTimeout(() => resolve({
             stats: { totalEvents: 6, totalUsers: 128, pendingEvents: 3 },
             recent: [
@@ -173,20 +179,18 @@ const Page = () => {
         })
 
         if (!mounted) return;
-        // @ts-ignore
         setStats(data.stats)
-        // @ts-ignore
         setRecentEvents(data.recent)
         setIsLoading(false)
 
         // defer non-critical work
         if ('requestIdleCallback' in window) {
-          // @ts-ignore
           requestIdleCallback(() => {
             // dynamically loaded analytics will render when needed
           })
         }
-      } catch (err) {
+      } catch (err: unknown) {
+        console.error(err)
         // graceful fallback
         if (!mounted) return;
         setIsLoading(false)
@@ -225,7 +229,7 @@ const Page = () => {
             Admin Dashboard
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
-            Welcome back, {user?.name || 'Admin'}! Here's what's happening today.
+            Welcome back, {user?.fullname || 'Admin'}! Here&apos;s what&apos;s happening today.
           </p>
         </motion.div>
         
@@ -248,10 +252,10 @@ const Page = () => {
           </Link>
           
           <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center overflow-hidden">
-            {user?.avatar ? (
+            {user?.image ? (
               <Image 
-                src={user.avatar} 
-                alt={user?.name || 'Admin'} 
+                src={user.image} 
+                alt={user?.fullname || 'Admin'} 
                 width={40} 
                 height={40}
                 className="object-cover"
@@ -259,7 +263,7 @@ const Page = () => {
               />
             ) : (
               <span className="font-medium text-blue-600 dark:text-blue-400">
-                {(user?.name || 'A').charAt(0)}
+                {(user?.fullname || 'A').charAt(0)}
               </span>
             )}
           </div>
@@ -317,7 +321,7 @@ const Page = () => {
           {isLoading ? (
             Array(3).fill(0).map((_, i) => <EventRow key={i} isLoading={true} event={{}} />)
           ) : (
-            recentEvents.map(event => <EventRow key={event.id} event={event} isLoading={false} />)
+            recentEvents.map(event => <EventRow key={event._id} event={event} isLoading={false} />)
           )}
         </div>
       </motion.div>

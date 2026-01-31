@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, Award, Heart } from "lucide-react";
+import Image from "next/image";
 
 const About = () => {
   const values = [
@@ -43,7 +44,7 @@ const About = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1">
-        <section className="bg-[url('/assets/event_HomePage.jpeg')] bg-cover bg-end w-full h-[40vh] py-20">
+        <section className="bg-cover bg-end w-full h-[40vh] py-20">
           <div className="container mx-auto px-4 text-center text-white">
             <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-6">
               About Eventify
@@ -62,16 +63,16 @@ const About = () => {
                 <p>
                   Founded in 2024, Eventify was born from a simple idea: make it easier for people to discover
                   and attend events that matter to them. We noticed that great events were happening everywhere,
-                  but people often missed out because they didn't know about them.
+                  but people often missed out because they didn&apos;t know about them.
                 </p>
                 <p>
-                  Today, we're proud to serve thousands of event organizers and attendees, helping them connect,
+                  Today, we&apos;re proud to serve thousands of event organizers and attendees, helping them connect,
                   learn, and grow together. Our platform has become the go-to destination for discovering everything
                   from tech conferences to networking meetups, workshops, and more.
                 </p>
                 <p>
                   We believe that events have the power to change lives, spark innovation, and build communities.
-                  That's why we're committed to making event discovery and management as seamless as possible.
+                  That&apos;s why we&apos;re committed to making event discovery and management as seamless as possible.
                 </p>
               </div>
             </div>
@@ -112,11 +113,13 @@ const About = () => {
               {team.map((member) => (
                 <Card key={member.name} className="text-center hover:shadow-card-hover transition-all">
                   <CardContent className="pt-6">
-                    <img 
+                    <Image
                       src={member.image} 
                       alt={member.name}
                       className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
                       loading="lazy"
+                      width={128}
+                      height={128}
                     />
                     <h3 className="font-bold text-lg mb-1">{member.name}</h3>
                     <p className="text-sm text-muted-foreground">{member.role}</p>

@@ -9,8 +9,8 @@ type AdminContextType = {
 const AdminContext = createContext<AdminContextType | null>(null)
 
 export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
-  const [error, setError] = useState('');
-  const [datafetched, setDatafetched] = useState(false);
+  const [error] = useState('');
+  const [datafetched] = useState(false);
 
 return (
   <AdminContext.Provider value={{

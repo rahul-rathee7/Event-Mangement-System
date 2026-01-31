@@ -6,49 +6,9 @@ import Image from 'next/image'
 import { useAuth } from '@/context/UserContext'
 import { useEventContext } from '@/context/EventContext'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
-import { Calendar, Clock, MapPin, Users, Star, Share2, Heart, Ticket, ArrowRight, ChevronDown, Bookmark, CheckCircle, Info } from 'lucide-react'
+import { Calendar, Clock, MapPin, Star, Share2, Heart, Ticket, ArrowRight, ChevronDown, Bookmark, CheckCircle, Info } from 'lucide-react'
 import Link from 'next/link'
-// Fallback Tooltip (removed import from '@/components/ui/tooltip' which wasn't found)
-const Tooltip = ({ children, content }: { children: React.ReactNode; content?: string }) => (
-  <span title={content} className="relative inline-block">
-    {children}
-  </span>
-)
-// Local fallback useMediaQuery hook (replaces missing '@/hooks/useMediaQuery')
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false
-    return window.matchMedia(query).matches
-  })
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const mql = window.matchMedia(query)
-    const handler = (e: MediaQueryListEvent) => setMatches(e.matches)
-
-    // Prefer modern addEventListener/removeEventListener, fallback to addListener/removeListener
-    if (mql.addEventListener) {
-      mql.addEventListener('change', handler)
-    } else {
-      mql.addListener(handler)
-    }
-
-    // set initial value
-    setMatches(mql.matches)
-
-    return () => {
-      if (mql.removeEventListener) {
-        mql.removeEventListener('change', handler)
-      } else {
-        mql.removeListener(handler)
-      }
-    }
-  }, [query])
-
-  return matches
-}
-
-// Loading skeleton with shimmer effect
 const EventSkeleton = () => (
   <div className="w-full max-w-5xl mx-auto px-4">
     <div className="relative h-[400px] w-full bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-2xl mb-8 overflow-hidden">
@@ -107,7 +67,7 @@ const RelatedEventCard = ({ event }) => (
     whileHover={{ y: -5 }}
     className="group cursor-pointer"
   >
-    <Link href={`/events/${event.id}`} className="block">
+    <Link href={`/events/${event._id}`} className="block">
       <div className="relative w-full h-32 md:h-36 rounded-xl overflow-hidden mb-2">
         <Image 
           src={event.image} 
@@ -210,9 +170,10 @@ const EventMap = ({ location }) => (
 );
 
 const EventDetailsPage = () => {
-  const { id } = useParams();
+  const params = useParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const { user } = useAuth();
-  const { events } = useEventContext();
+  const { events, FeaturedEvents } = useEventContext();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -220,9 +181,6 @@ const EventDetailsPage = () => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [showTicketOptions, setShowTicketOptions] = useState(false);
   const shareButtonRef = useRef(null);
-  
-  // Check for mobile screens
-  const isMobile = useMediaQuery('(max-width: 768px)');
   
   // Scroll animations
   const headerRef = useRef(null);
@@ -244,7 +202,7 @@ const EventDetailsPage = () => {
     return () => clearTimeout(timer);
   }, [events, router]);
   
-  const eventDetails = events.find(event => event.id === parseInt(id));
+  const eventDetails = events.find(event => String(event._id) === String(id));
   
   // Find related events (same category or similar) with memoization
   const relatedEvents = React.useMemo(() => {
@@ -252,7 +210,7 @@ const EventDetailsPage = () => {
     
     return events
       .filter(event => 
-        event.id !== parseInt(id) && 
+        event._id !== id &&
         (event.category === eventDetails?.category || 
          event.tags?.some(tag => eventDetails?.tags?.includes(tag)))
       )
@@ -288,7 +246,7 @@ const EventDetailsPage = () => {
           </div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">Event Not Found</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-            The event you're looking for doesn't exist or has been removed. It might have been cancelled or moved.
+            The event you&apos;re looking for doesn&apos;t exist or has been removed. It might have been cancelled or moved.
           </p>
           <button 
             onClick={() => router.push('/events')}
@@ -374,10 +332,11 @@ const EventDetailsPage = () => {
                     <span className="px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-full">
                       {eventDetails?.category || 'Event'}
                     </span>
-                    {eventDetails?.featured && (
-                      <span className="px-3 py-1 bg-amber-500 text-white text-xs font-semibold rounded-full">
-                        Featured
-                      </span>
+                    {
+                      FeaturedEvents && (
+                        <span className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-full">
+                          Featured
+                        </span>
                     )}
                   </div>
                   <h1 className="text-3xl md:text-5xl font-bold text-white mb-3 drop-shadow-sm">
@@ -428,7 +387,7 @@ const EventDetailsPage = () => {
                   <div>
                     <p className="text-gray-600 dark:text-gray-400 text-sm">Price</p>
                     <p className="text-xl font-bold text-gray-900 dark:text-white">
-                      {eventDetails?.price === 0 ? 'Free Entry' : `$${eventDetails?.price || '25'}`}
+                      {eventDetails?.ticketPrice === 0 ? 'Free Entry' : `$${eventDetails?.ticketPrice || '25'}`}
                     </p>
                   </div>
                 </div>
@@ -543,7 +502,7 @@ const EventDetailsPage = () => {
                           <div className="flex items-center mt-1">
                             <Ticket className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
                             <span className="text-gray-700 dark:text-gray-300 font-medium">
-                              {eventDetails?.price === 0 ? 'Free Entry' : `$${eventDetails?.price || '25'}`}
+                              {eventDetails?.ticketPrice === 0 ? 'Free Entry' : `$${eventDetails?.ticketPrice || '25'}`}
                             </span>
                           </div>
                           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -563,7 +522,7 @@ const EventDetailsPage = () => {
                     </div>
                     
                     {/* VIP Ticket (only if event is paid) */}
-                    {eventDetails?.price > 0 && (
+                    {eventDetails?.ticketPrice > 0 && (
                       <div className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-blue-50/50 dark:bg-blue-900/10 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div>
@@ -574,7 +533,7 @@ const EventDetailsPage = () => {
                             <div className="flex items-center mt-1">
                               <Ticket className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
                               <span className="text-gray-700 dark:text-gray-300 font-medium">
-                                ${(eventDetails?.price * 2.5).toFixed(2) || '65'}
+                                ${(eventDetails?.ticketPrice * 2.5).toFixed(2) || '65'}
                               </span>
                             </div>
                             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -606,7 +565,7 @@ const EventDetailsPage = () => {
                             <div className="flex items-center mt-1">
                               <Ticket className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" />
                               <span className="text-gray-700 dark:text-gray-300 font-medium">
-                                ${eventDetails?.price * 0.8 || '20'} per person
+                                ${eventDetails?.ticketPrice * 0.8 || '20'} per person
                               </span>
                             </div>
                             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -653,8 +612,7 @@ const EventDetailsPage = () => {
                   </Suspense>
                   
                   <div className="mt-4">
-                    <h3 className="font-medium text-gray-900 dark:text-white">{eventDetails?.venue || 'Event Venue'}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">{eventDetails?.location}</p>
+                    <h3 className="text-gray-600 dark:text-gray-400 mt-1">{eventDetails?.location}</h3>
                   </div>
                 </motion.div>
               </div>
@@ -670,17 +628,8 @@ const EventDetailsPage = () => {
                 >
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Organizer</h3>
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden mr-4">
-                      <Image 
-                        src={eventDetails?.organizerImage || '/assets/default-avatar.png'} 
-                        alt="Organizer" 
-                        width={48}
-                        height={48}
-                        className="object-cover"
-                      />
-                    </div>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{eventDetails?.organizer || 'Event Organizer'}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{eventDetails?.organizerInfo || 'Event Organizer'}</p>
                       <div className="flex items-center mt-1">
                         <Star className="w-4 h-4 text-amber-500 mr-1 fill-amber-500" />
                         <span className="text-sm text-gray-600 dark:text-gray-400">4.8 (42 events)</span>
@@ -688,11 +637,6 @@ const EventDetailsPage = () => {
                     </div>
                   </div>
                   <div className="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <p className="flex items-center">
-                      <Users className="w-4 h-4 mr-2" />
-                      <span>{eventDetails?.attendees || 42} people attending</span>
-                    </p>
-                    
                     <div className="flex -space-x-2 overflow-hidden mt-2">
                       {Array(5).fill(0).map((_, i) => (
                         <div key={i} className="inline-block h-8 w-8 rounded-full border-2 border-white dark:border-gray-800 bg-gray-200 dark:bg-gray-700">
@@ -719,8 +663,8 @@ const EventDetailsPage = () => {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Similar Events</h3>
                   <div className="space-y-4">
                     {relatedEvents.length > 0 ? (
-                      relatedEvents.map((event, index) => (
-                        <RelatedEventCard key={event.id} event={event} />
+                      relatedEvents.map((event) => (
+                        <RelatedEventCard key={event._id} event={event} />
                       ))
                     ) : (
                       <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4 text-center">

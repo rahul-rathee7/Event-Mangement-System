@@ -184,12 +184,6 @@ const ProfilePage = () => {
                           </div>
                           <div className="flex items-start">
                             <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-md mr-4"><Calendar size={20} className="text-amber-600 dark:text-amber-400" /></div>
-                            <div>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">Member Since</p>
-                              <p className="text-md font-medium text-gray-900 dark:text-white mt-1">
-                                {localUser?.createdAt ? new Date(localUser.createdAt).toLocaleDateString() : 'N/A'}
-                              </p>
-                            </div>
                           </div>
                         </div>
                       )}

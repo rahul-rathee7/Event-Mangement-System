@@ -7,7 +7,7 @@ const Page = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" })
   const { useSignUp, isSignedup } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("")
+  const [error] = useState("")
   const [role, setRole] = useState("user");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +29,7 @@ const Page = () => {
     setLoading(true);
     try {
       await handleSignUp();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
     } finally {
       setLoading(false);

@@ -39,7 +39,7 @@ type Summary = {
   avgSession: number
 }
 
-const KPI = React.memo(({ label, value, change, icon, spark }: any) => (
+const KPI = React.memo(({ label, value, change, icon, spark }: { label: string, value: number | string, change: number, icon: React.ReactNode, spark: number[] }) => (
   <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 shadow-sm">
     <div className="flex items-start justify-between">
       <div className="flex items-center gap-3">
@@ -101,12 +101,9 @@ const DeepAnalyticsPage = () => {
         if (!mounted) return
         setLoading(false)
         // gently prefetch heavy chart during idle to optimize UX without blocking
-        if ('requestIdleCallback' in window) {
-          // @ts-ignore
-          requestIdleCallback(() => {
-            void HeavyDeepChart.prefetch?.() // attempt to prefetch if available
-          })
-        }
+        // Note: Next.js dynamic imports do not expose a 'prefetch' method.
+        // If you want to prefetch, you can import the module directly here if needed.
+        // For now, we simply do nothing here.
       }
     }
     load()
@@ -236,7 +233,7 @@ const DeepAnalyticsPage = () => {
               <div className="h-72 w-full rounded-xl border border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center">
                 <div className="text-center">
                   <p className="font-medium text-gray-900 dark:text-white">Lightweight preview</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Click "Load heavy chart" for interactive, exportable visuals.</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Click &quot;Load heavy chart&quot; for interactive, exportable visuals.</p>
                   <div className="mt-4 w-full">
                     <Sparkline data={summary.visitors} stroke="#7C3AED" />
                   </div>

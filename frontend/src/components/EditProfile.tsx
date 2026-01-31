@@ -15,6 +15,10 @@ interface LocationResult {
 
 interface EditProfileProps {
   seteditProfile: (isOpen: boolean) => void;
+  description?: string;
+  location?: string;
+  phone?: number;
+  darkMode?: boolean;
 }
 
 const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
@@ -71,6 +75,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
           setLocationResults("No results found");
         }
       } catch (err) {
+        console.log(err);
         console.log("Backend API unavailable, using Nominatim fallback");
         
         const nominatimRes = await axios.get<LocationResult[]>(

@@ -170,7 +170,6 @@ const HeroSection = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Header with optimized image */}
       <div className="relative h-[85vh] w-full overflow-hidden">
         <div className="absolute inset-0 bg-black/30 dark:bg-black/50 z-10"></div>
         <Image

@@ -32,7 +32,7 @@ const Page = () => {
         router.push("/userAuth/login/verify-otp")
       }
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
     } finally {
       setLoading(false)

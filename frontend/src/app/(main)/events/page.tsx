@@ -87,7 +87,6 @@ const EventSkeleton = () => (
 
 // Main Component
 const EventsPage = () => {
-  const router = useRouter();
   const { events, isLoading } = useEventContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -270,7 +269,7 @@ const EventsPage = () => {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           >
             {filteredEvents.map((event, index) => (
-              <EventCard key={event.id || index} event={event} index={index} />
+              <EventCard key={event._id || index} event={event} index={index} />
             ))}
           </motion.div>
         ) : (

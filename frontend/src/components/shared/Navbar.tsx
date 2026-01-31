@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import ThemeToggleButton from '../ui/theme-toggle-button';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { Menu, X, Bell, Search, ChevronDown, LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { Menu, X, Search, ChevronDown, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 
 function useOnClickOutside<T extends HTMLElement = HTMLElement>(
@@ -68,11 +68,18 @@ const NavLink = ({ href, label, isActive }: NavLinkProps) => {
   );
 };
 
-const MobileNav = ({ isOpen, onClose, user }) => {
+type MobileNavProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  user: { fullname?: string; email?: string; image?: string; role?: string } | null;
+  SignOutButton: () => void;
+};
+
+const MobileNav = ({ isOpen, onClose, user, SignOutButton }: MobileNavProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const mobileNavRef = useRef(null);
-  
+
   useOnClickOutside(mobileNavRef, () => {
     if (isOpen) onClose();
   });
@@ -186,7 +193,6 @@ const MobileNav = ({ isOpen, onClose, user }) => {
               ) : (
                 <button 
                   onClick={() => {
-                    const { SignOutButton } = useAuth();
                     SignOutButton();
                     onClose();
                   }}
@@ -444,6 +450,7 @@ const Navbar = () => {
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
         user={user}
+        SignOutButton={SignOutButton}
       />
       
       {/* Spacer for fixed header */}

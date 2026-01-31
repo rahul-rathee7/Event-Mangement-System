@@ -1,9 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
 
-@theme inline {
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -136,12 +135,9 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 
@@ -158,6 +154,7 @@ input[type="number"]::-webkit-inner-spin-button {
   border-radius: 50%;
   background: #514b82;
   -webkit-mask: radial-gradient(circle closest-side at 50% 40%,#0000 94%, #000);
+  mask: radial-gradient(circle closest-side at 50% 40%,#0000 94%, #000);
   transform-origin: 50% 40%;
   animation: l25 1s infinite linear;
 }
