@@ -24,14 +24,7 @@ app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:8081', 'https
 app.use(express.json());
 app.use(cookieparser());
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your_secret_key',
-    resave: false,
-    saveUninitialized: false
-}));
-
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.get("/", (req, res) => {
     res.send("API is running...");

@@ -1,7 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
-import { checkCookie, loginUser, logoutUser, registerUser } from '../controllers/Auth.js';
+import { checkCookie, loginUser, logoutUser, registerUser, createToken } from '../controllers/Auth.js';
 
 const router = express.Router();
 
@@ -13,18 +12,16 @@ router.get('/logout', logoutUser);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: 'https://event-mangement-system-one.vercel.app/userAuth/login', session: false }),
+  passport.authenticate('google', { failureRedirect: 'https://event-mangement-system-one.vercel.app/userAuth/login', session: true }),
   (req, res) => {
     const user = req.user;
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'your_jwt_secret', {
-      expiresIn: '1h',
-    });
+    const token = createToken(user);
 
     res.cookie('token', token, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 3600000
+        maxAge: 3600000 * 24 * 7 // 7 days
     });
 
     res.redirect('https://event-mangement-system-one.vercel.app/');

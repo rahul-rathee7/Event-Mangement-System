@@ -2,20 +2,12 @@ import User from '../models/user.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 
-const createToken = (res, user) => {
-  const token = jwt.sign(
+export const createToken = (user) => {
+  return jwt.sign(
     { id: user._id, email: user.email },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   )
-
-  res.cookie('token', token, {
-    httpOnly: true,
-    sameSite: 'none',
-    secure: true
-  })
-
-  return token
 }
 
 export const checkCookie = async (req, res) => {
@@ -52,7 +44,14 @@ export const loginUser = async (req, res) => {
     if (!validPass)
       return res.status(401).json({ success: false, message: 'Incorrect password' })
 
-    const token = createToken(res, user)
+    const token = createToken(user)
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 3600000 * 24 * 7 // 7 days
+    })
 
     res.status(200).json({
       success: true,
@@ -89,9 +88,16 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
     const userPng = "https://res.cloudinary.com/dgxwp0k8w/image/upload/v1760082438/user_vhcgsk.png"
 
-    const newUser = await User.create({ email, password: hashedPassword, fullname, image:  userPng, role,  twoFA: false })
+    const newUser = await User.create({ email, password: hashedPassword, fullname, image: userPng, role, twoFA: false })
 
-    const token = createToken(res, newUser)
+    const token = createToken(newUser)
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 3600000 * 24 * 7 // 7 days
+    })
 
     res.status(201).json({
       success: true,

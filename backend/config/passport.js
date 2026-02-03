@@ -5,12 +5,11 @@ import User from '../models/user.js'; // Adjust the path to your user model if n
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'YOUR_GOOGLE_CLIENT_SECRET',
-    callbackURL: '/api/auth/google/callback',
+    callbackURL: 'https://event-mangement-system-one.vercel.app/api/auth/google/callback',
     scope: ['profile', 'email']
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      // Find a user with the Google ID
       let user = await User.findOne({ googleId: profile.id });
 
       if (user) {
@@ -31,6 +30,7 @@ passport.use(new GoogleStrategy({
             googleId: profile.id,
             fullname: profile.displayName,
             email: profile.emails[0].value,
+            image: profile.photos[0].value,
             // You might want to set a default role or other properties
             role: 'user', 
           });
