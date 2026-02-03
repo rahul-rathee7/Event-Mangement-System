@@ -11,7 +11,7 @@ const createToken = (res, user) => {
 
   res.cookie('token', token, {
     httpOnly: true,
-    sameSite: 'lax',
+    sameSite: 'none',
     secure: true
   })
 
