@@ -14,7 +14,7 @@ router.get('/logout', logoutUser);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: 'http://localhost:3000/userAuth/login', session: false }),
+  passport.authenticate('google', { failureRedirect: 'https://event-mangement-system-one.vercel.app/userAuth/login', session: false }),
   (req, res) => {
     const user = req.user;
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'your_jwt_secret', {

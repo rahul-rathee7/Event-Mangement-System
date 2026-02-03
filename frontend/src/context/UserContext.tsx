@@ -88,6 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const formattedUser = { ...rest };
           setUser(formattedUser);
           console.log(formattedUser);
+          
           return { status: !formattedUser.twoFA ? "complete" : "needs_email_verification" };
         }
 
