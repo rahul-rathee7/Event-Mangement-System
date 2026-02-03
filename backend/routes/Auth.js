@@ -10,7 +10,6 @@ router.post('/login', loginUser);
 router.post('/register', registerUser);
 router.get('/logout', logoutUser);
 
-// Google OAuth Routes
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback', 
@@ -28,7 +27,7 @@ router.get('/google/callback',
         maxAge: 3600000
     });
 
-    res.redirect('http://localhost:3000/');
+    res.redirect('https://event-mangement-system-one.vercel.app/');
   }
 );
 
