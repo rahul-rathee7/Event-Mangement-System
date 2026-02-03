@@ -21,6 +21,7 @@ router.get('/google/callback',
     });
 
     res.cookie('token', token, {
+        domain: ".vercel.app",
         httpOnly: true,
         secure: true,
         sameSite: 'none',
