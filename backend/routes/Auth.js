@@ -12,7 +12,7 @@ router.get('/logout', logoutUser);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/google/callback', 
-  passport.authenticate('google', { failureRedirect: 'https://event-mangement-system-one.vercel.app/userAuth/login', session: true }),
+  passport.authenticate('google', { failureRedirect: 'https://event-mangement-system-one.vercel.app/userAuth/login', session: false }),
   (req, res) => {
     const user = req.user;
     const token = createToken(user);
