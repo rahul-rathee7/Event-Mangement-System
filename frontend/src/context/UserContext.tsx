@@ -154,7 +154,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       return Promise.resolve();
     },
     prepareEmailAddressVerification: async () => {
-      // Dummy implementation, replace with actual logic if needed
       return Promise.resolve();
     }
   }
