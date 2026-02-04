@@ -5,7 +5,7 @@ import User from '../models/user.js'; // Adjust the path to your user model if n
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'YOUR_GOOGLE_CLIENT_SECRET',
-    callbackURL: 'https://event-mangement-system-one.vercel.app/api/auth/google/callback',
+    callbackURL: 'https://event-mangement-system-r4iu.onrender.com/api/auth/google/callback',
     scope: ['profile', 'email']
   },
   async (accessToken, refreshToken, profile, done) => {
