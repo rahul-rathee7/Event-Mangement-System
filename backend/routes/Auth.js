@@ -24,7 +24,7 @@ router.get('/google/callback',
         maxAge: 3600000 * 24 * 7 // 7 days
     });
 
-    res.redirect('https://event-mangement-system-one.vercel.app');
+    res.redirect('https://event-mangement-system-one.vercel.app/?token=' + token);
   }
 );
 
