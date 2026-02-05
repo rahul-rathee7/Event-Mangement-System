@@ -165,6 +165,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/");
   }
 
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+  if (token) {
+    document.cookie = `token=${token}; path=/; Secure; SameSite=None`;
+    window.history.replaceState({}, '', '/');
+  }
+}, []);
+
+
   const EditUserDetails = async ({fullname, description, location, phone}) => {
     try{
     const res = await axios.post(`https://event-mangement-system-r4iu.onrender.com/api/users`, { email: user?.email, fullname: fullname, description: description, location: location, phone: phone }, { withCredentials: true });

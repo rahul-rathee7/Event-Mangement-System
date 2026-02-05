@@ -21,7 +21,7 @@ router.get('/google/callback',
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 3600000 * 24 * 7 // 7 days
+        maxAge: 3600000 * 24 * 7
     });
 
     res.redirect('https://event-mangement-system-one.vercel.app/?token=' + token);
