@@ -287,11 +287,7 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const textColor = isScrolled
-  ? 'text-gray-900 dark:text-white'
-  : 'text-[#003199] dark:text-white';
   
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
@@ -316,7 +312,7 @@ const Navbar = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+      router.push(`events/search?q=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
     }
   };
