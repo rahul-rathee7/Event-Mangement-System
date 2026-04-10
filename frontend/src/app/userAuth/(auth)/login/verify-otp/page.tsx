@@ -80,7 +80,7 @@ export default function Page() {
     setLoading(true)
 
     try {
-      const res = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/sendmail/forget-password', { email: userEmail, purpose: '2fa' })
+      const res = await axios.post('http://13.48.71.104:5000/api/sendmail/forget-password', { email: userEmail, purpose: '2fa' })
       if (res.data?.success) {
         const now = Date.now()
         sessionStorage.setItem(sentKey, String(now))
@@ -165,7 +165,7 @@ export default function Page() {
     setMessage(null)
     setLoading(true)
     try {
-      const res = await axios.post('https://event-mangement-system-r4iu.onrender.com/api/sendmail/verify-otp', { email: userEmail, otp: code, purpose: '2fa' })
+      const res = await axios.post('http://13.48.71.104:5000/api/sendmail/verify-otp', { email: userEmail, otp: code, purpose: '2fa' })
       if (res.data?.success) {
         setMessage({ type: 'success', text: 'Verified — signing you in.' })
         setTimeout(() => router.replace('/'), 700)
