@@ -23,7 +23,7 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try{
-      const res = await axios.post("http://13.48.71.104:5000/api/users/store-message", {name: formData.name, email: formData.email, subject: formData.subject, message: formData.message}, {
+      const res = await axios.post("https://13.48.71.104.nip.io/api/users/store-message", {name: formData.name, email: formData.email, subject: formData.subject, message: formData.message}, {
       });
       if(res.data.success) {
         console.log("We'll get back to you as soon as possible");

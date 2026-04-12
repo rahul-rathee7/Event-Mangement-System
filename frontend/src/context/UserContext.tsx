@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     isLoaded: true,
     create: async ({ emailAddress, password }: SignInParams): Promise<SignInResult> => {
       try {
-        const response = await axios.post(`http://13.48.71.104:5000/api/auth/login`, {
+        const response = await axios.post(`https://13.48.71.104.nip.io/api/auth/login`, {
           email: emailAddress,
           password: password,
         }, { withCredentials: true })
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     create: async ({ emailAddress, password, fullname, role }: SignUpParams): Promise<SignUpResult> => {
       setIsSignedup(true);
       try {
-        const response = await axios.post(`http://13.48.71.104:5000/api/auth/register`, {
+        const response = await axios.post(`https://13.48.71.104.nip.io/api/auth/register`, {
           email: emailAddress,
           password: password,
           fullname: fullname,
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const SignOutButton = async () => {
-    await axios.get("http://13.48.71.104:5000/api/auth/logout", {withCredentials: true});
+    await axios.get("https://13.48.71.104.nip.io/api/auth/logout", {withCredentials: true});
     setUser(null)
     delete axios.defaults.headers.common['Authorization']
     router.push("/");
@@ -178,7 +178,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const EditUserDetails = async ({fullname, description, location, phone}) => {
     try{
-    const res = await axios.post(`http://13.48.71.104:5000/api/users`, { email: user?.email, fullname: fullname, description: description, location: location, phone: phone }, { withCredentials: true });
+    const res = await axios.post(`https://13.48.71.104.nip.io/api/users`, { email: user?.email, fullname: fullname, description: description, location: location, phone: phone }, { withCredentials: true });
       if (res.data.success) {
         setUser((prev => prev ? {...prev, fullname: res.data.fullname, description: res.data.description, location: res.data.location, phone: res.data.phone} : prev));
       }
@@ -194,7 +194,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 useEffect(() => {
   async function fetchUserFromToken() {
     try{
-      const res = await axios.get('http://13.48.71.104:5000/api/auth/get-cookie', { withCredentials: true });
+      const res = await axios.get('https://13.48.71.104.nip.io/api/auth/get-cookie', { withCredentials: true });
       if(res.data.success) {
         setUser(res.data.user);
         setDatafetched(true);
@@ -222,7 +222,7 @@ const setProfileImage = async (file: File) => {
 const enableTwoFA = async () => {
   setUser((prev) => prev ? {...prev, twoFA: !prev.twoFA} : prev);
   try{
-    const res = await axios.post('http://13.48.71.104:5000/api/users/enable-two-factor', {email: user?.email, inp: !user?.twoFA}, { withCredentials: true });
+    const res = await axios.post('https://13.48.71.104.nip.io/api/users/enable-two-factor', {email: user?.email, inp: !user?.twoFA}, { withCredentials: true });
     if(res.data.success) {
       setUser((prev) => prev ? {...prev, twoFA: res.data.two_factor} : prev);
       toast.success(`Two-Factor Authentication ${!user?.twoFA ? 'Enabled' : 'Disabled'}`);

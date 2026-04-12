@@ -140,7 +140,7 @@ const EventDetailsPage = () => {
     }, 800);
     async function fetchOrganizerInfo() {
     if (user && eventDetails) {
-      const res = await axios.post(`http://13.48.71.104:5000/api/users/getUserByName`, {
+      const res = await axios.post(`https://13.48.71.104.nip.io/api/users/getUserByName`, {
         id: eventDetails.organizerInfo
       }, { withCredentials: true });
       if(res.data.success){

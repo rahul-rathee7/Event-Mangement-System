@@ -60,7 +60,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
       setIsSearchingLocation(true);
       try {
         const res = await axios.get<LocationResult[]>(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://13.48.71.104:5000'}/api/users/search-location`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://13.48.71.104.nip.io'}/api/users/search-location`,
           {
             params: { query: placeName },
             withCredentials: true,
@@ -125,7 +125,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ seteditProfile }) => {
     };
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://13.48.71.104:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://13.48.71.104.nip.io';
       const response = await axios.post(
         `${apiUrl}/api/users/update-data`, 
         updatedData,

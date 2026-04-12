@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function GoogleSignupButton() {
   return (
     <a 
-      href="http://13.48.71.104:5000/api/auth/google"
+      href="https://13.48.71.104.nip.io/api/auth/google"
       className="mt-3 w-full flex justify-center items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-red-600 transition"
     >
       <Image
